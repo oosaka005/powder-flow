@@ -1,0 +1,156 @@
+[
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "sample_material",
+    "diskID": "D06",
+    "calibration_date": "20251222_142442",
+    "vib_level": 3,
+    "vib_time": 1.0,
+    "used_aug": false,
+    "step_mass_mean": 0.115625,
+    "density_g_per_ml": null
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "CB-P02",
+    "diskID": "D06",
+    "calibration_date": "20260113_152712",
+    "vib_level": 4,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.584125,
+    "density_g_per_ml": 0.973542
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "FUJICALIN SG",
+    "diskID": "D06",
+    "calibration_date": "20251223_165207",
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": false,
+    "step_mass_mean": 0.315125,
+    "density_g_per_ml": 0.525208
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "CB-A100S",
+    "diskID": "D06",
+    "calibration_date": "20260105_144326",
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": false,
+    "step_mass_mean": 1.42925,
+    "density_g_per_ml": 2.382083
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "POLYOX WSR N10",
+    "diskID": "D06",
+    "calibration_date": "20260106_093814",
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": false,
+    "step_mass_mean": 0.29975,
+    "density_g_per_ml": 0.499583
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "ETHOCEL Std",
+    "diskID": "D06",
+    "calibration_date": "20260116_144231",
+    "vib_level": 2,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.292,
+    "density_g_per_ml": 0.486667
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "CB-A100S",
+    "diskID": "D03",
+    "calibration_date": "20260408_131017",
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.20114285714285712,
+    "density_g_per_ml": 2.681904761904762
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "CB-A100S",
+    "diskID": "D01",
+    "calibration_date": "20260408_133315",
+    "vib_level": 2,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.04442857142857143,
+    "density_g_per_ml": 6.346938775510204
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "Ludiflash",
+    "diskID": "D06",
+    "calibration_date": "20260409_132357",
+    "vib_level": 2,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.39285714285714285,
+    "density_g_per_ml": 0.6547619047619048
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "Ludiflash",
+    "diskID": "D03",
+    "calibration_date": "20260409_140245",
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.04342857142857143,
+    "density_g_per_ml": 0.579047619047619
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "NEUSILIN US2",
+    "diskID": "D06",
+    "calibration_date": "20260410_125201",
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.09942857142857142,
+    "density_g_per_ml": 0.1657142857142857
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "NEUSILIN US2",
+    "diskID": "D03",
+    "calibration_date": "20260410_135009",
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.011142857142857144,
+    "density_g_per_ml": 0.14857142857142858
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "Kollidon VA64",
+    "diskID": "D06",
+    "calibration_date": "20260414_164013",
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.23014285714285715,
+    "density_g_per_ml": 0.3835714285714286
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "Kollidon VA64",
+    "diskID": "D03",
+    "calibration_date": "20260414_171323",
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.029285714285714283,
+    "density_g_per_ml": 0.3904761904761905
+  }
+]

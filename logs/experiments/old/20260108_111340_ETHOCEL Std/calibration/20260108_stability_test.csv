@@ -1,0 +1,9 @@
+condition,step_index,cumulative_mass_g,per_step_mass_g,success
+level3_t1.0,1,0.000000,0.000000,False
+level3_t1.0,2,0.000000,0.000000,False
+level3_t1.0,3,0.050000,0.050000,True
+level3_t1.0,4,0.328000,0.278000,True
+level3_t1.0,5,0.870000,0.542000,True
+level3_t1.0,6,1.162000,0.292000,True
+level3_t1.0,7,1.438000,0.276000,True
+level3_t1.0,8,1.715000,0.277000,True

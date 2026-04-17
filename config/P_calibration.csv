@@ -1,0 +1,7 @@
+dispenserID,mat_name,diskID,calibration_date,vib_level,vib_time,used_aug,step_mass_mean,density_g_per_ml
+powder_dispenser,sample_material,D06,20251222_142442,3,1.0,False,0.115625,
+powder_dispenser,CB-P02,D06,20260113_152712,4,1.0,True,0.584125,0.973542
+powder_dispenser,FUJICALIN SG,D06,20251223_165207,1,1.0,False,0.315125,0.525208
+powder_dispenser,CB-A100S,D06,20260105_144326,1,1.0,False,1.429250,2.382083
+powder_dispenser,POLYOX WSR N10,D06,20260106_093814,1,1.0,False,0.299750,0.499583
+powder_dispenser,ETHOCEL Std,D06,20260116_144231,2,1.0,True,0.292000,0.486667

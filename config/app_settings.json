@@ -1,0 +1,76 @@
+{
+  "material": {
+    "material_name": "Kollidon VA64",
+    "part_type": "metal",
+    "disk_id": "D08"
+  },
+  "calibration": {
+    "vib_levels": [
+      1,
+      2
+    ],
+    "vib_time_candidates": [
+      1.0
+    ],
+    "steps_per_level": 5,
+    "stability_steps": 7,
+    "noise_threshold_g": 0.005
+  },
+  "bulk_density": {
+    "repeats": 7,
+    "weak_vib_level": 2,
+    "strong_vib_level": 4,
+    "vib_sec_default": 1.0
+  },
+  "tapped_density": {
+    "repeats": 7,
+    "vib_level": 4,
+    "vib_sec": 3.0
+  },
+  "manual": {
+    "manual_vibration_level": 1,
+    "manual_vibration_sec": 1.0,
+    "manual_use_aug": true,
+    "manual_dose_count": 10,
+    "manual_camera_focus_mode": "auto",
+    "manual_camera_lens_position": 10.0
+  },
+  "paths": {
+    "log_root": "logs/experiments"
+  },
+  "disk_master": {
+    "D01": {
+      "volume_ml": 0.007
+    },
+    "D02": {
+      "volume_ml": 0.03
+    },
+    "D03": {
+      "volume_ml": 0.075
+    },
+    "D04": {
+      "volume_ml": 0.105
+    },
+    "D05": {
+      "volume_ml": 0.26
+    },
+    "D06": {
+      "volume_ml": 0.6
+    },
+    "D07": {
+      "volume_ml": 0.9
+    },
+    "D08": {
+      "volume_ml": 1.5
+    },
+    "D09": {
+      "volume_ml": 3.5
+    },
+    "D10": {
+      "volume_ml": 5.5
+    },
+    "D11": {
+      "volume_ml": 8.0
+    }
+  }
+}

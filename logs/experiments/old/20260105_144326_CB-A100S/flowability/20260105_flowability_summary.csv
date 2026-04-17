@@ -1,0 +1,2 @@
+material_name,powder_type,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,hausner_class,angle_of_repose_deg,repose_class,angle_image_path
+CB-A100S,,metal,D06,20260105_144326,1,1.0,2.389000,0.006549,2.531667,0.170238,1.059718,Excellent,22.878201,Excellent,logs/experiments/20260105_144326_CB-A100S/flowability/20260105_raw_image.png

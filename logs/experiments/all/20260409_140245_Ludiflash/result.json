@@ -1,0 +1,317 @@
+{
+  "angle_of_repose": {
+    "angle_deg": 34.444741271712246,
+    "class": "Good",
+    "success": true
+  },
+  "calibration": {
+    "density_g_per_ml": 0.579047619047619,
+    "level_results": [
+      {
+        "cumulative": [
+          0.045,
+          0.082,
+          0.127,
+          0.167,
+          0.216
+        ],
+        "level": 1,
+        "mean_step_mass": 0.0432,
+        "per_step": [
+          0.045,
+          0.037000000000000005,
+          0.045,
+          0.04000000000000001,
+          0.04899999999999999
+        ],
+        "std_step_mass": 0.004214261501141089,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      },
+      {
+        "cumulative": [
+          0.054,
+          0.098,
+          0.147,
+          0.202,
+          0.251
+        ],
+        "level": 2,
+        "mean_step_mass": 0.0502,
+        "per_step": [
+          0.054,
+          0.044000000000000004,
+          0.04899999999999999,
+          0.05500000000000002,
+          0.04899999999999999
+        ],
+        "std_step_mass": 0.003969886648255846,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      },
+      {
+        "cumulative": [
+          0.054,
+          0.103,
+          0.158,
+          0.207,
+          0.26
+        ],
+        "level": 3,
+        "mean_step_mass": 0.052000000000000005,
+        "per_step": [
+          0.054,
+          0.048999999999999995,
+          0.05500000000000001,
+          0.04899999999999999,
+          0.05300000000000002
+        ],
+        "std_step_mass": 0.0025298221281347105,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "selected_vib_level": 1,
+    "selected_vib_time": 1.0,
+    "stability_results": [
+      {
+        "cumulative": [
+          0.037,
+          0.084,
+          0.129,
+          0.165,
+          0.214,
+          0.265,
+          0.304
+        ],
+        "level": 1,
+        "mean_step_mass": 0.04342857142857143,
+        "per_step": [
+          0.037,
+          0.04700000000000001,
+          0.045,
+          0.036000000000000004,
+          0.04899999999999999,
+          0.05100000000000002,
+          0.03899999999999998
+        ],
+        "std_step_mass": 0.005602477586036455,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "stability_steps": 7,
+    "stability_success": true,
+    "step_count": 7,
+    "step_mass_mean": 0.04342857142857143,
+    "step_mass_std": 0.005602477586036455,
+    "steps_per_level": 5,
+    "success": true,
+    "time_results": null,
+    "vib_levels": [
+      1,
+      2,
+      3
+    ],
+    "vib_time_candidates": [
+      1.0
+    ]
+  },
+  "hausner": {
+    "bulk_density": {
+      "densities": [
+        0.7333333333333334,
+        0.64,
+        0.6533333333333334,
+        0.7066666666666667,
+        0.7466666666666667,
+        0.5733333333333334,
+        0.6799999999999999
+      ],
+      "masses": [
+        0.055,
+        0.048,
+        0.04900000000000001,
+        0.053,
+        0.056,
+        0.043000000000000003,
+        0.051
+      ],
+      "mean": 0.68,
+      "stdev": 0.021773242158072654,
+      "success": true
+    },
+    "class": "Good",
+    "ratio": 1.1372549019607843,
+    "tapped_density": {
+      "densities": [
+        0.7066666666666667,
+        0.8133333333333334,
+        0.8,
+        0.7466666666666667,
+        0.6666666666666667,
+        0.8,
+        0.7733333333333334
+      ],
+      "masses": [
+        0.053,
+        0.061,
+        0.06,
+        0.056,
+        0.05,
+        0.06,
+        0.058
+      ],
+      "mean": 0.7733333333333334,
+      "stdev": 0.0217732421580727,
+      "success": true
+    }
+  },
+  "metadata": {
+    "app_settings": {
+      "bulk_density": {
+        "repeats": 7,
+        "strong_vib_level": 4,
+        "vib_sec_default": 1.0,
+        "weak_vib_level": 2
+      },
+      "calibration": {
+        "noise_threshold_g": 0.005,
+        "stability_steps": 7,
+        "steps_per_level": 5,
+        "vib_levels": [
+          1,
+          2,
+          3
+        ],
+        "vib_time_candidates": [
+          1.0
+        ]
+      },
+      "disk_master": {
+        "D01": {
+          "volume_ml": 0.007
+        },
+        "D02": {
+          "volume_ml": 0.03
+        },
+        "D03": {
+          "volume_ml": 0.075
+        },
+        "D04": {
+          "volume_ml": 0.105
+        },
+        "D05": {
+          "volume_ml": 0.26
+        },
+        "D06": {
+          "volume_ml": 0.6
+        },
+        "D07": {
+          "volume_ml": 0.9
+        },
+        "D08": {
+          "volume_ml": 1.5
+        },
+        "D09": {
+          "volume_ml": 3.5
+        },
+        "D10": {
+          "volume_ml": 5.5
+        },
+        "D11": {
+          "volume_ml": 8.0
+        }
+      },
+      "manual": {
+        "manual_camera_focus_mode": "manual",
+        "manual_camera_lens_position": 32.0,
+        "manual_dose_count": 1,
+        "manual_use_aug": true,
+        "manual_vibration_level": 1,
+        "manual_vibration_sec": 1.0
+      },
+      "material": {
+        "disk_id": "D03",
+        "material_name": "Ludiflash",
+        "part_type": "metal"
+      },
+      "paths": {
+        "log_root": "logs/experiments"
+      },
+      "tapped_density": {
+        "repeats": 7,
+        "vib_level": 4,
+        "vib_sec": 3.0
+      }
+    },
+    "run_id": "20260409_140245_Ludiflash",
+    "success": {
+      "angle_of_repose": true,
+      "bulk_density": true,
+      "calibration": true,
+      "tapped_density": true
+    },
+    "timestamp": "20260409_140245"
+  }
+}

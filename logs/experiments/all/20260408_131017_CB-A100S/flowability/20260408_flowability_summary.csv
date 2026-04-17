@@ -1,0 +1,2 @@
+material_name,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,hausner_class,angle_of_repose_deg,repose_class
+CB-A100S,metal,D03,20260408_131017,1,1.0,4.111111111111111,0.14374188114485537,2.24,0.1700544575085244,0.544864864864865,Excellent,16.42859231902217,Excellent

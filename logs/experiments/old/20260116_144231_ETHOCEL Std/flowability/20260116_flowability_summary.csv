@@ -1,0 +1,2 @@
+material_name,powder_type,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,hausner_class,angle_of_repose_deg,repose_class,angle_image_path
+ETHOCEL Std,,metal,D06,20260116_144231,2,1.0,0.415000,0.006236,0.491667,0.004082,1.184739,Fair,33.630605,Good,logs/experiments/20260116_144231_ETHOCEL Std/flowability/20260116_raw_image.png

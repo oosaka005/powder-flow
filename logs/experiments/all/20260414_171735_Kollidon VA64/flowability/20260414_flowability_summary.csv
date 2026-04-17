@@ -1,0 +1,2 @@
+material_name,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,hausner_class,angle_of_repose_deg,repose_class
+Kollidon VA64,metal,D03,20260414_171735,1,1.0,0.4488888888888889,0.02266230894930124,0.46222222222222226,0.0062853936105471036,1.0297029702970297,Excellent,32.99752457267192,Good

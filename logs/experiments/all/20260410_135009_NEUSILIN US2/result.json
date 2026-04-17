@@ -1,0 +1,268 @@
+{
+  "angle_of_repose": {
+    "angle_deg": 24.885913930141534,
+    "class": "Excellent",
+    "success": true
+  },
+  "calibration": {
+    "density_g_per_ml": 0.14857142857142858,
+    "level_results": [
+      {
+        "cumulative": [
+          0.009,
+          0.019,
+          0.025,
+          0.038,
+          0.047
+        ],
+        "level": 1,
+        "mean_step_mass": 0.0094,
+        "per_step": [
+          0.009,
+          0.01,
+          0.006000000000000002,
+          0.012999999999999998,
+          0.009000000000000001
+        ],
+        "std_step_mass": 0.0022449944320643636,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      },
+      {
+        "cumulative": [
+          0.011,
+          0.021,
+          0.031,
+          0.043,
+          0.057
+        ],
+        "level": 2,
+        "mean_step_mass": 0.0114,
+        "per_step": [
+          0.011,
+          0.010000000000000002,
+          0.009999999999999998,
+          0.011999999999999997,
+          0.014000000000000005
+        ],
+        "std_step_mass": 0.0014966629547095783,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "selected_vib_level": 1,
+    "selected_vib_time": 1.0,
+    "stability_results": [
+      {
+        "cumulative": [
+          0.013,
+          0.02,
+          0.031,
+          0.048,
+          0.054,
+          0.064,
+          0.078
+        ],
+        "level": 1,
+        "mean_step_mass": 0.011142857142857144,
+        "per_step": [
+          0.013,
+          0.007000000000000001,
+          0.011,
+          0.017,
+          0.005999999999999998,
+          0.010000000000000002,
+          0.013999999999999999
+        ],
+        "std_step_mass": 0.0036027200608338547,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "stability_steps": 7,
+    "stability_success": true,
+    "step_count": 7,
+    "step_mass_mean": 0.011142857142857144,
+    "step_mass_std": 0.0036027200608338547,
+    "steps_per_level": 5,
+    "success": true,
+    "time_results": null,
+    "vib_levels": [
+      1,
+      2
+    ],
+    "vib_time_candidates": [
+      1.0
+    ]
+  },
+  "hausner": {
+    "bulk_density": {
+      "densities": [
+        0.09333333333333334,
+        0.12,
+        0.14666666666666667,
+        0.16,
+        0.13333333333333333,
+        0.14666666666666667,
+        0.16
+      ],
+      "masses": [
+        0.007,
+        0.009,
+        0.011,
+        0.012,
+        0.01,
+        0.011,
+        0.012
+      ],
+      "mean": 0.14222222222222222,
+      "stdev": 0.0062853936105470905,
+      "success": true
+    },
+    "class": null,
+    "ratio": null,
+    "tapped_density": {
+      "densities": [
+        0.06666666666666667
+      ],
+      "masses": [
+        0.005
+      ],
+      "mean": null,
+      "stdev": null,
+      "success": false
+    }
+  },
+  "metadata": {
+    "app_settings": {
+      "bulk_density": {
+        "repeats": 7,
+        "strong_vib_level": 4,
+        "vib_sec_default": 1.0,
+        "weak_vib_level": 2
+      },
+      "calibration": {
+        "noise_threshold_g": 0.005,
+        "stability_steps": 7,
+        "steps_per_level": 5,
+        "vib_levels": [
+          1,
+          2
+        ],
+        "vib_time_candidates": [
+          1.0
+        ]
+      },
+      "disk_master": {
+        "D01": {
+          "volume_ml": 0.007
+        },
+        "D02": {
+          "volume_ml": 0.03
+        },
+        "D03": {
+          "volume_ml": 0.075
+        },
+        "D04": {
+          "volume_ml": 0.105
+        },
+        "D05": {
+          "volume_ml": 0.26
+        },
+        "D06": {
+          "volume_ml": 0.6
+        },
+        "D07": {
+          "volume_ml": 0.9
+        },
+        "D08": {
+          "volume_ml": 1.5
+        },
+        "D09": {
+          "volume_ml": 3.5
+        },
+        "D10": {
+          "volume_ml": 5.5
+        },
+        "D11": {
+          "volume_ml": 8.0
+        }
+      },
+      "manual": {
+        "manual_camera_focus_mode": "auto",
+        "manual_camera_lens_position": 10.0,
+        "manual_dose_count": 10,
+        "manual_use_aug": true,
+        "manual_vibration_level": 1,
+        "manual_vibration_sec": 1.0
+      },
+      "material": {
+        "disk_id": "D03",
+        "material_name": "NEUSILIN US2",
+        "part_type": "metal"
+      },
+      "paths": {
+        "log_root": "logs/experiments"
+      },
+      "tapped_density": {
+        "repeats": 7,
+        "vib_level": 4,
+        "vib_sec": 3.0
+      }
+    },
+    "run_id": "20260410_135009_NEUSILIN US2",
+    "success": {
+      "angle_of_repose": false,
+      "bulk_density": true,
+      "calibration": true,
+      "tapped_density": false
+    },
+    "timestamp": "20260410_135009"
+  }
+}

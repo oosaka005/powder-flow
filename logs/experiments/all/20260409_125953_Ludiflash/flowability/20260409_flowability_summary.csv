@@ -1,0 +1,2 @@
+material_name,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,hausner_class,angle_of_repose_deg,repose_class
+Ludiflash,metal,D06,20260409_125953,1,1.0,0.6666666666666667,0.001360827634879575,0.765,0.0,1.1475,Good,32.204611025246344,Good

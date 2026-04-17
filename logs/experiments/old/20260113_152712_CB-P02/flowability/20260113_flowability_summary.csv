@@ -1,0 +1,2 @@
+material_name,powder_type,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,hausner_class,angle_of_repose_deg,repose_class,angle_image_path
+CB-P02,,metal,D06,20260113_152712,4,1.0,0.388000,0.340283,1.399333,0.089911,3.606529,"Very, very poor",24.058749,Excellent,logs/experiments/20260113_152712_CB-P02/flowability/20260113_raw_image.png

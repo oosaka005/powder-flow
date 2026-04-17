@@ -1,0 +1,2 @@
+material_name,powder_type,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,angle_of_repose_deg,angle_image_path
+FUJICALIN SG,,metal,D06,20251223_165207,1,1.0,0.524333,0.002708,0.656667,0.021448,1.252384,29.644888,logs/experiments/20251223_165207_FUJICALIN SG/flowability/20251223_raw_image.png
