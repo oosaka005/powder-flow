@@ -18,7 +18,7 @@
   },
   "bulk_density": {
     "repeats": 7,
-    "weak_vib_level": 2,
+    "weak_vib_level": 1,
     "strong_vib_level": 4,
     "vib_sec_default": 1.0
   },
