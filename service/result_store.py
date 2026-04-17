@@ -180,6 +180,15 @@ def _update_material_database(payload: dict[str, Any]) -> None:
     for key in update_keys:
         record[key] = payload[key]
 
+    # Recalculate Hausner ratio whenever bulk or tapped density values are present.
+    bulk = record.get("bulk_density_mean")
+    tapped = record.get("tapped_density_mean")
+    if bulk is not None and tapped is not None and bulk > 0:
+        from operation.powder_flow_api import classify_hausner
+        ratio = tapped / bulk
+        record["hausner_ratio"] = ratio
+        record["hausner_class"] = classify_hausner(ratio)
+
     existing[rec_idx] = record
     _write_json(db_path, existing)
 
