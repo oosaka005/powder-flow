@@ -24,6 +24,7 @@ _COLUMNS: list[tuple[str, str]] = [
     ("vib_level",            "Vib Level"),
     ("vib_time",             "Vib Time (s)"),
     ("step_mass_mean",       "Step Mass Mean (g)"),
+    ("step_mass_std",        "Step Mass Std (g)"),
     ("density_g_per_ml",     "Density (g/mL)"),
     ("bulk_density_mean",    "Bulk Density (g/mL)"),
     ("tapped_density_mean",  "Tapped Density (g/mL)"),
@@ -34,7 +35,7 @@ _COLUMNS: list[tuple[str, str]] = [
 ]
 
 _FLOAT_KEYS = {
-    "volume_ml", "step_mass_mean", "density_g_per_ml",
+    "volume_ml", "step_mass_mean", "step_mass_std", "density_g_per_ml",
     "bulk_density_mean", "tapped_density_mean", "hausner_ratio",
     "angle_of_repose_deg",
 }
@@ -81,6 +82,14 @@ class MaterialDbView(QWidget):
         self._table.setSelectionBehavior(QTableWidget.SelectRows)
         self._table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         self._table.verticalHeader().setVisible(False)
+        self._table.setStyleSheet("""
+            QScrollBar:horizontal {
+                height: 36px;
+            }
+            QScrollBar::handle:horizontal {
+                min-width: 40px;
+            }
+        """)
 
         root = QVBoxLayout()
         root.setContentsMargins(9, 9, 9, 9)

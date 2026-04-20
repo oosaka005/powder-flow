@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+
 from app.widgets.touch_numeric_input import TouchNumericInput
 from service.settings_store import load_settings, update_settings
 
@@ -83,6 +84,16 @@ class SetupView(QWidget):
         self.stability_steps_input.setDecimals(0)
         self.stability_steps_input.setValue(int(calibration["stability_steps"]))
 
+        # Auto-save: connect all inputs
+        self.material_name_input.currentTextChanged.connect(self._on_setting_changed)
+        self.disk_id_input.currentTextChanged.connect(self._on_setting_changed)
+        for checkbox in self.vib_level_checks:
+            checkbox.stateChanged.connect(self._on_setting_changed)
+        for checkbox in self.vib_time_checks:
+            checkbox.stateChanged.connect(self._on_setting_changed)
+        self.steps_per_level_input.valueChanged.connect(self._on_setting_changed)
+        self.stability_steps_input.valueChanged.connect(self._on_setting_changed)
+
         form.addRow("Material name", self.material_name_input)
         form.addRow("Disk ID", self.disk_id_input)
         form.addRow(
@@ -94,32 +105,14 @@ class SetupView(QWidget):
         form.addRow("Dose count for stability test (3-20)", self.stability_steps_input)
 
         self.run_button = QPushButton("Start Automated Evaluation")
-        self.apply_button = QPushButton("Apply Settings")
         self.run_button.clicked.connect(self._on_save_and_open_run)
-        self.apply_button.clicked.connect(self._on_apply_settings)
         self.run_button.setMinimumHeight(52)
         self.run_button.setMinimumWidth(520)
-        self.apply_button.setMinimumHeight(52)
-        self.apply_button.setMaximumWidth(220)
 
         buttons = QHBoxLayout()
-        left_spacer = QWidget()
-        center_slot = QWidget()
-        right_slot = QWidget()
-        center_layout = QHBoxLayout()
-        center_layout.setContentsMargins(0, 0, 0, 0)
-        center_layout.addStretch(1)
-        center_layout.addWidget(self.run_button)
-        center_layout.addStretch(1)
-        center_slot.setLayout(center_layout)
-        right_layout = QHBoxLayout()
-        right_layout.setContentsMargins(0, 0, 0, 0)
-        right_layout.addStretch(1)
-        right_layout.addWidget(self.apply_button)
-        right_slot.setLayout(right_layout)
-        buttons.addWidget(left_spacer, 1)
-        buttons.addWidget(center_slot, 1)
-        buttons.addWidget(right_slot, 1)
+        buttons.addStretch(1)
+        buttons.addWidget(self.run_button)
+        buttons.addStretch(1)
 
         root = QVBoxLayout()
         root.setContentsMargins(9, 9, 9, 9)
@@ -146,53 +139,60 @@ class SetupView(QWidget):
         self.material_name_input.addItems(names)
         self.material_name_input.setCurrentText(current_name)
 
-    def _save_settings_from_ui(self) -> bool:
-        try:
-            material_name = self.material_name_input.currentText().strip()
-            disk_id = self.disk_id_input.currentText().strip()
-            vib_levels = [
-                int(checkbox.text()) for checkbox in self.vib_level_checks if checkbox.isChecked()
-            ]
-            vib_times = [
-                float(checkbox.text()) for checkbox in self.vib_time_checks if checkbox.isChecked()
-            ]
-            steps_per_level = self.steps_per_level_input.value()
-            stability_steps = self.stability_steps_input.value()
+    def _collect_settings_from_ui(self) -> dict:
+        material_name = self.material_name_input.currentText().strip()
+        disk_id = self.disk_id_input.currentText().strip()
+        vib_levels = [
+            int(checkbox.text()) for checkbox in self.vib_level_checks if checkbox.isChecked()
+        ]
+        vib_times = [
+            float(checkbox.text()) for checkbox in self.vib_time_checks if checkbox.isChecked()
+        ]
+        steps_per_level = self.steps_per_level_input.value()
+        stability_steps = self.stability_steps_input.value()
 
-            if not material_name:
-                raise ValueError("Material name is empty.")
-            if not disk_id:
-                raise ValueError("Disk ID is empty.")
-            if not vib_levels:
-                raise ValueError("VIB levels is empty.")
-            if not vib_times:
-                raise ValueError("VIB time candidates is empty.")
+        if not material_name:
+            raise ValueError("Material name is empty.")
+        if not disk_id:
+            raise ValueError("Disk ID is empty.")
+        if not vib_levels:
+            raise ValueError("VIB levels is empty.")
+        if not vib_times:
+            raise ValueError("VIB time candidates is empty.")
+
+        return {
+            "material": {
+                "material_name": material_name,
+                "part_type": "metal",
+                "disk_id": disk_id,
+            },
+            "calibration": {
+                "vib_levels": vib_levels,
+                "vib_time_candidates": vib_times,
+                "steps_per_level": steps_per_level,
+                "stability_steps": stability_steps,
+            },
+        }
+
+    def _on_setting_changed(self, *_args) -> None:
+        """Auto-save on any setting change. Silently skips invalid intermediate states."""
+        try:
+            settings = self._collect_settings_from_ui()
+            update_settings(settings)
+        except Exception:
+            pass
+
+    def _save_settings_from_ui(self) -> bool:
+        """Validate and save, showing an error dialog on failure. Used by Run button."""
+        try:
+            settings = self._collect_settings_from_ui()
+            update_settings(settings)
+            return True
         except Exception as exc:
             QMessageBox.warning(self, "Input Error", str(exc))
             return False
-
-        update_settings(
-            {
-                "material": {
-                    "material_name": material_name,
-                    "part_type": "metal",
-                    "disk_id": disk_id,
-                },
-                "calibration": {
-                    "vib_levels": vib_levels,
-                    "vib_time_candidates": vib_times,
-                    "steps_per_level": steps_per_level,
-                    "stability_steps": stability_steps,
-                },
-            }
-        )
-        return True
 
     def _on_save_and_open_run(self) -> None:
         if not self._save_settings_from_ui():
             return
         self.proceed_to_run.emit()
-
-    def _on_apply_settings(self) -> None:
-        if not self._save_settings_from_ui():
-            return

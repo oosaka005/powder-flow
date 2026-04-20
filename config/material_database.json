@@ -17,7 +17,13 @@
     "hausner_ratio": null,
     "hausner_class": null,
     "angle_of_repose_deg": null,
-    "repose_class": null
+    "repose_class": null,
+    "sources": {
+      "calibration": null,
+      "bulk_density": null,
+      "tapped_density": null,
+      "angle_of_repose": null
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -37,7 +43,13 @@
     "hausner_ratio": null,
     "hausner_class": null,
     "angle_of_repose_deg": null,
-    "repose_class": null
+    "repose_class": null,
+    "sources": {
+      "calibration": "old/20260113_152712_CB-P02",
+      "bulk_density": null,
+      "tapped_density": null,
+      "angle_of_repose": null
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -57,7 +69,13 @@
     "hausner_ratio": null,
     "hausner_class": null,
     "angle_of_repose_deg": null,
-    "repose_class": null
+    "repose_class": null,
+    "sources": {
+      "calibration": "old/20251223_165207_FUJICALIN SG",
+      "bulk_density": null,
+      "tapped_density": null,
+      "angle_of_repose": null
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -77,7 +95,13 @@
     "hausner_ratio": 0.9674982833600365,
     "hausner_class": "Excellent",
     "angle_of_repose_deg": 13.920727939939054,
-    "repose_class": "Excellent"
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": "all/20260408_101110_CB-A100S",
+      "bulk_density": "all/20260408_101110_CB-A100S",
+      "tapped_density": "all/20260408_101110_CB-A100S",
+      "angle_of_repose": "all/20260408_101110_CB-A100S"
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -97,7 +121,13 @@
     "hausner_ratio": null,
     "hausner_class": null,
     "angle_of_repose_deg": null,
-    "repose_class": null
+    "repose_class": null,
+    "sources": {
+      "calibration": "old/20260106_093814_POLYOX WSR N10",
+      "bulk_density": null,
+      "tapped_density": null,
+      "angle_of_repose": null
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -117,7 +147,13 @@
     "hausner_ratio": null,
     "hausner_class": null,
     "angle_of_repose_deg": null,
-    "repose_class": null
+    "repose_class": null,
+    "sources": {
+      "calibration": "old/20260116_144231_ETHOCEL Std",
+      "bulk_density": null,
+      "tapped_density": null,
+      "angle_of_repose": null
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -137,7 +173,13 @@
     "hausner_ratio": 0.544864864864865,
     "hausner_class": "Excellent",
     "angle_of_repose_deg": 16.42859231902217,
-    "repose_class": "Excellent"
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": "all/20260408_131017_CB-A100S",
+      "bulk_density": "all/20260408_131017_CB-A100S",
+      "tapped_density": "all/20260408_131017_CB-A100S",
+      "angle_of_repose": "all/20260408_131017_CB-A100S"
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -157,7 +199,13 @@
     "hausner_ratio": 0.821705426356589,
     "hausner_class": "Excellent",
     "angle_of_repose_deg": null,
-    "repose_class": null
+    "repose_class": null,
+    "sources": {
+      "calibration": "all/20260408_133315_CB-A100S",
+      "bulk_density": "all/20260408_133315_CB-A100S",
+      "tapped_density": "all/20260408_133315_CB-A100S",
+      "angle_of_repose": null
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -177,7 +225,13 @@
     "hausner_ratio": 1.1434528773978314,
     "hausner_class": "Good",
     "angle_of_repose_deg": 32.86829352515301,
-    "repose_class": "Good"
+    "repose_class": "Good",
+    "sources": {
+      "calibration": "all/20260409_132357_Ludiflash",
+      "bulk_density": "all/20260409_132357_Ludiflash",
+      "tapped_density": "all/20260409_132357_Ludiflash",
+      "angle_of_repose": "all/20260409_132357_Ludiflash"
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -197,7 +251,13 @@
     "hausner_ratio": 1.1372549019607843,
     "hausner_class": "Good",
     "angle_of_repose_deg": 34.444741271712246,
-    "repose_class": "Good"
+    "repose_class": "Good",
+    "sources": {
+      "calibration": "all/20260409_140245_Ludiflash",
+      "bulk_density": "all/20260409_140245_Ludiflash",
+      "tapped_density": "all/20260409_140245_Ludiflash",
+      "angle_of_repose": "all/20260409_140245_Ludiflash"
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -217,7 +277,13 @@
     "hausner_ratio": 1.1167192429022081,
     "hausner_class": "Good",
     "angle_of_repose_deg": 23.37016466458134,
-    "repose_class": "Excellent"
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": "all/20260410_125201_NEUSILIN US2",
+      "bulk_density": "all/20260410_125201_NEUSILIN US2",
+      "tapped_density": "all/20260410_125201_NEUSILIN US2",
+      "angle_of_repose": "all/20260410_125201_NEUSILIN US2"
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -237,7 +303,13 @@
     "hausner_ratio": null,
     "hausner_class": null,
     "angle_of_repose_deg": 25.761643364256756,
-    "repose_class": "Excellent"
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": "all/20260410_135009_NEUSILIN US2",
+      "bulk_density": "all/20260410_135009_NEUSILIN US2",
+      "tapped_density": null,
+      "angle_of_repose": "single/20260410_145357_NEUSILIN US2_angle_of_repose"
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -257,7 +329,13 @@
     "hausner_ratio": 1.1303225806451611,
     "hausner_class": "Good",
     "angle_of_repose_deg": 30.673154123872692,
-    "repose_class": "Good"
+    "repose_class": "Good",
+    "sources": {
+      "calibration": "all/20260414_164013_Kollidon VA64",
+      "bulk_density": "all/20260414_164013_Kollidon VA64",
+      "tapped_density": "all/20260414_164013_Kollidon VA64",
+      "angle_of_repose": "single/20260414_165248_Kollidon VA64_angle_of_repose"
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -277,7 +355,13 @@
     "hausner_ratio": 1.0297029702970297,
     "hausner_class": "Excellent",
     "angle_of_repose_deg": 32.99752457267192,
-    "repose_class": "Good"
+    "repose_class": "Good",
+    "sources": {
+      "calibration": "all/20260414_171735_Kollidon VA64",
+      "bulk_density": "all/20260414_171735_Kollidon VA64",
+      "tapped_density": "all/20260414_171735_Kollidon VA64",
+      "angle_of_repose": "all/20260414_171735_Kollidon VA64"
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -297,27 +381,39 @@
     "hausner_ratio": null,
     "hausner_class": null,
     "angle_of_repose_deg": 11.9026815309193,
-    "repose_class": "Excellent"
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": null,
+      "bulk_density": null,
+      "tapped_density": null,
+      "angle_of_repose": null
+    }
   },
   {
     "dispenserID": "powder_dispenser",
     "mat_name": "Kollidon VA64",
     "diskID": "D08",
     "volume_ml": 1.5,
-    "vib_level": null,
-    "vib_time": null,
-    "used_aug": null,
-    "step_mass_mean": null,
-    "step_mass_std": null,
-    "density_g_per_ml": null,
-    "bulk_density_mean": 0.5566666666666666,
-    "bulk_density_stdev": 0.0014401645996461867,
+    "vib_level": 2,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.7555714285714286,
+    "step_mass_std": 0.006966391622992386,
+    "density_g_per_ml": 0.5037142857142857,
+    "bulk_density_mean": 0.49955555555555553,
+    "bulk_density_stdev": 0.001749779527558185,
     "tapped_density_mean": 0.5673333333333334,
     "tapped_density_stdev": 0.004650766563656953,
-    "hausner_ratio": 1.0191616766467066,
-    "hausner_class": "Excellent",
-    "angle_of_repose_deg": null,
-    "repose_class": null
+    "hausner_ratio": 1.13567615658363,
+    "hausner_class": "Good",
+    "angle_of_repose_deg": 26.096888830857033,
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": "single/20260420_112901_Kollidon VA64_calibration",
+      "bulk_density": "single/20260420_113020_Kollidon VA64_bulk_density",
+      "tapped_density": "single/20260417_165529_Kollidon VA64_tapped_density",
+      "angle_of_repose": "single/20260417_171851_Kollidon VA64_angle_of_repose"
+    }
   },
   {
     "dispenserID": "powder_dispenser",
@@ -326,17 +422,23 @@
     "volume_ml": 5.5,
     "vib_level": 2,
     "vib_time": 1.0,
-    "used_aug": false,
-    "step_mass_mean": 2.1035714285714286,
-    "step_mass_std": 0.024534856504032285,
-    "density_g_per_ml": 1.4023809523809525,
-    "bulk_density_mean": null,
-    "bulk_density_stdev": null,
-    "tapped_density_mean": null,
-    "tapped_density_stdev": null,
-    "hausner_ratio": null,
-    "hausner_class": null,
-    "angle_of_repose_deg": 26.096888830857033,
-    "repose_class": "Excellent"
+    "used_aug": true,
+    "step_mass_mean": 2.140857142857143,
+    "step_mass_std": 0.05800598139460334,
+    "density_g_per_ml": 0.3892467532467533,
+    "bulk_density_mean": 0.37436363636363634,
+    "bulk_density_stdev": 0.001268390880997378,
+    "tapped_density_mean": 0.4393939393939394,
+    "tapped_density_stdev": 0.0014264972479926968,
+    "hausner_ratio": 1.1737089201877935,
+    "hausner_class": "Good",
+    "angle_of_repose_deg": 29.571628925116343,
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": "single/20260420_111630_Kollidon VA64_calibration",
+      "bulk_density": "single/20260420_110902_Kollidon VA64_bulk_density",
+      "tapped_density": "single/20260420_111143_Kollidon VA64_tapped_density",
+      "angle_of_repose": "single/20260420_121955_Kollidon VA64_angle_of_repose"
+    }
   }
 ]

@@ -128,7 +128,7 @@ def _load_disk_volume(disk_id: str) -> float | None:
     return None
 
 
-def _update_material_database(payload: dict[str, Any]) -> None:
+def _update_material_database(payload: dict[str, Any], *, sources_update: dict[str, str | None] | None = None) -> None:
     """Merge payload fields into material_database.json, keyed by mat_name + diskID.
 
     Only fields present in payload (besides the keys) are overwritten;
@@ -171,6 +171,12 @@ def _update_material_database(payload: dict[str, Any]) -> None:
             "hausner_class": None,
             "angle_of_repose_deg": None,
             "repose_class": None,
+            "sources": {
+                "calibration": None,
+                "bulk_density": None,
+                "tapped_density": None,
+                "angle_of_repose": None,
+            },
         }
         existing.append(record)
         rec_idx = len(existing) - 1
@@ -188,6 +194,18 @@ def _update_material_database(payload: dict[str, Any]) -> None:
         ratio = tapped / bulk
         record["hausner_ratio"] = ratio
         record["hausner_class"] = classify_hausner(ratio)
+
+    # Update sources tracking.
+    if sources_update:
+        if not isinstance(record.get("sources"), dict):
+            record["sources"] = {
+                "calibration": None,
+                "bulk_density": None,
+                "tapped_density": None,
+                "angle_of_repose": None,
+            }
+        for stage, folder in sources_update.items():
+            record["sources"][stage] = folder
 
     existing[rec_idx] = record
     _write_json(db_path, existing)
@@ -294,6 +312,7 @@ def save_results(result: dict[str, Any]) -> None:
         bulk_density = hausner["bulk_density"]
         tapped_density = hausner["tapped_density"]
         material = result_data["metadata"]["app_settings"]["material"]
+        folder_path = f"all/{run_id}"
         _update_material_database({
             "dispenserID": "powder_dispenser",
             "mat_name": material["material_name"],
@@ -312,6 +331,11 @@ def save_results(result: dict[str, Any]) -> None:
             "hausner_class": hausner["class"],
             "angle_of_repose_deg": repose.get("angle_deg"),
             "repose_class": repose.get("class"),
+        }, sources_update={
+            "calibration": folder_path,
+            "bulk_density": folder_path,
+            "tapped_density": folder_path,
+            "angle_of_repose": folder_path if repose.get("angle_deg") is not None else None,
         })
 
 
@@ -360,7 +384,7 @@ def save_single_test_result(result: dict[str, Any]) -> None:
                 "step_mass_mean": calibration["step_mass_mean"],
                 "step_mass_std": calibration.get("step_mass_std"),
                 "density_g_per_ml": calibration.get("density_g_per_ml"),
-            })
+            }, sources_update={"calibration": f"single/{folder_name}"})
 
     elif stage == "angle_of_repose":
         repose = stage_data
@@ -373,7 +397,7 @@ def save_single_test_result(result: dict[str, Any]) -> None:
                 "diskID": metadata["app_settings"]["material"]["disk_id"],
                 "angle_of_repose_deg": repose.get("angle_deg"),
                 "repose_class": repose.get("class"),
-            })
+            }, sources_update={"angle_of_repose": f"single/{folder_name}" if repose.get("angle_deg") is not None else None})
 
     elif stage == "bulk_density":
         density = stage_data
@@ -392,7 +416,7 @@ def save_single_test_result(result: dict[str, Any]) -> None:
                 "diskID": metadata["app_settings"]["material"]["disk_id"],
                 "bulk_density_mean": density.get("mean"),
                 "bulk_density_stdev": density.get("stdev"),
-            })
+            }, sources_update={"bulk_density": f"single/{folder_name}"})
 
     elif stage == "tapped_density":
         density = stage_data
@@ -411,7 +435,7 @@ def save_single_test_result(result: dict[str, Any]) -> None:
                 "diskID": metadata["app_settings"]["material"]["disk_id"],
                 "tapped_density_mean": density.get("mean"),
                 "tapped_density_stdev": density.get("stdev"),
-            })
+            }, sources_update={"tapped_density": f"single/{folder_name}"})
 
 
 def discard_results(result: dict[str, Any]) -> None:
