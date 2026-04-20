@@ -6,6 +6,7 @@ from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication, QStackedWidget, QTabWidget
 
 from app.views.manual import ManualView
+from app.views.material_db import MaterialDbView
 from app.views.result import ResultView
 from app.views.run import RunView
 from app.views.single_test import SingleTestView
@@ -41,10 +42,12 @@ def main() -> int:
     result_view = ResultView()
     manual_view = ManualView()
     single_test_view = SingleTestView()
+    material_db_view = MaterialDbView()
     mode_tabs = QTabWidget()
     mode_tabs.addTab(setup_view, "Setup Mode")
     mode_tabs.addTab(manual_view, "Manual Mode")
     mode_tabs.addTab(single_test_view, "Single Test Mode")
+    mode_tabs.addTab(material_db_view, "Material DB")
 
     stack = QStackedWidget()
     stack.addWidget(mode_tabs)
@@ -73,11 +76,13 @@ def main() -> int:
 
     def _save_result() -> None:
         save_results(result_view.current_result())
+        material_db_view._load_db()
         result_view.set_status("Result saved. Returning to setup...")
         _show_setting()
 
     def _save_single_test_result() -> None:
         save_single_test_result(result_view.current_result())
+        material_db_view._load_db()
         result_view.set_status("Result saved. Returning to single test...")
         _show_single_test()
 
