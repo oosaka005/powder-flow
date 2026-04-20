@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "app_settings": {
+      "bulk_density": {
+        "repeats": 7,
+        "strong_vib_level": 4,
+        "vib_sec_default": 1.0,
+        "weak_vib_level": 1
+      },
+      "calibration": {
+        "noise_threshold_g": 0.005,
+        "stability_steps": 7,
+        "steps_per_level": 5,
+        "vib_levels": [
+          1,
+          2
+        ],
+        "vib_time_candidates": [
+          1.0
+        ]
+      },
+      "disk_master": {
+        "D01": {
+          "volume_ml": 0.007
+        },
+        "D02": {
+          "volume_ml": 0.03
+        },
+        "D03": {
+          "volume_ml": 0.075
+        },
+        "D04": {
+          "volume_ml": 0.105
+        },
+        "D05": {
+          "volume_ml": 0.26
+        },
+        "D06": {
+          "volume_ml": 0.6
+        },
+        "D07": {
+          "volume_ml": 0.9
+        },
+        "D08": {
+          "volume_ml": 1.5
+        },
+        "D09": {
+          "volume_ml": 3.5
+        },
+        "D10": {
+          "volume_ml": 5.5
+        },
+        "D11": {
+          "volume_ml": 8.0
+        }
+      },
+      "manual": {
+        "manual_camera_focus_mode": "auto",
+        "manual_camera_lens_position": 10.0,
+        "manual_dose_count": 1,
+        "manual_use_aug": false,
+        "manual_vibration_level": 1,
+        "manual_vibration_sec": 1.0
+      },
+      "material": {
+        "disk_id": "D08",
+        "material_name": "Kollidon VA64",
+        "part_type": "metal"
+      },
+      "paths": {
+        "log_root": "logs/experiments"
+      },
+      "tapped_density": {
+        "repeats": 7,
+        "vib_level": 4,
+        "vib_sec": 3.0
+      }
+    },
+    "material_name": "Kollidon VA64",
+    "stage": "calibration",
+    "success": true,
+    "timestamp": "20260417_171724"
+  },
+  "calibration": {
+    "density_g_per_ml": 1.4023809523809525,
+    "level_results": [
+      {
+        "cumulative": [
+          0.006,
+          2.01,
+          4.025,
+          6.028,
+          8.013
+        ],
+        "level": 1,
+        "mean_step_mass": 1.6026,
+        "per_step": [
+          0.006,
+          2.004,
+          2.0150000000000006,
+          2.0029999999999992,
+          1.9850000000000003
+        ],
+        "std_step_mass": 0.7983579648253032,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      },
+      {
+        "cumulative": [
+          2.005,
+          4.078,
+          6.2,
+          8.316,
+          10.43
+        ],
+        "level": 2,
+        "mean_step_mass": 2.086,
+        "per_step": [
+          2.005,
+          2.0730000000000004,
+          2.122,
+          2.1160000000000005,
+          2.113999999999999
+        ],
+        "std_step_mass": 0.04406812907306135,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "selected_vib_level": 2,
+    "selected_vib_time": 1.0,
+    "stability_results": [
+      {
+        "cumulative": [
+          2.063,
+          4.174,
+          6.301,
+          8.426,
+          10.499,
+          12.626,
+          14.725
+        ],
+        "level": 2,
+        "mean_step_mass": 2.1035714285714286,
+        "per_step": [
+          2.063,
+          2.111,
+          2.127,
+          2.125,
+          2.0730000000000004,
+          2.126999999999999,
+          2.099
+        ],
+        "std_step_mass": 0.024534856504032285,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "stability_steps": 7,
+    "stability_success": true,
+    "step_count": 7,
+    "step_mass_mean": 2.1035714285714286,
+    "step_mass_std": 0.024534856504032285,
+    "steps_per_level": 5,
+    "success": true,
+    "time_results": null,
+    "vib_levels": [
+      1,
+      2
+    ],
+    "vib_time_candidates": [
+      1.0
+    ]
+  }
+}

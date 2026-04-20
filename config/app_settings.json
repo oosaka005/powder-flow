@@ -2,7 +2,7 @@
   "material": {
     "material_name": "Kollidon VA64",
     "part_type": "metal",
-    "disk_id": "D08"
+    "disk_id": "D10"
   },
   "calibration": {
     "vib_levels": [
@@ -30,8 +30,8 @@
   "manual": {
     "manual_vibration_level": 1,
     "manual_vibration_sec": 1.0,
-    "manual_use_aug": true,
-    "manual_dose_count": 10,
+    "manual_use_aug": false,
+    "manual_dose_count": 1,
     "manual_camera_focus_mode": "auto",
     "manual_camera_lens_position": 10.0
   },

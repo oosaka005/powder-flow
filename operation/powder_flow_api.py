@@ -84,22 +84,41 @@ def measure_bulk_density(
     densities: list[float] = []
     success = True
     consecutive_step_timeouts = 0
+    disk_number = int(active_disk_id.lstrip("Dd"))
+    large_disk = disk_number >= 7
+    effective_repeats = 5 if large_disk else (settings["repeats"] if repeats is None else repeats)
     run_all_motors(vib_level=2, duration_sec=3.0)
-    for _ in range(max(1, int(settings["repeats"] if repeats is None else repeats))):
-        vib_with_aug(weak_vib_level, vib_sec_value)
-        balance.tare()
-        _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
-        vib_with_aug(strong_vib_level, 1.0)
+    for _ in range(max(1, int(effective_repeats))):
+        if large_disk:
+            vib_with_aug(weak_vib_level, vib_sec_value)
+            _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+            vib_with_aug(strong_vib_level, 1.0)
+            balance.tare()
+            _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+            vib_with_aug(strong_vib_level, 1.0)
+        else:
+            vib_with_aug(weak_vib_level, vib_sec_value)
+            balance.tare()
+            _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+            vib_with_aug(strong_vib_level, 1.0)
         mass = balance.read_weight()
         if mass < _noise_threshold_g():
             if not clear_clogging(balance):
                 success = False
                 break
             # Flush one cycle after recovery before recording data.
-            vib_with_aug(weak_vib_level, vib_sec_value)
-            balance.tare()
-            _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
-            vib_with_aug(strong_vib_level, 1.0)
+            if large_disk:
+                vib_with_aug(weak_vib_level, vib_sec_value)
+                _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+                vib_with_aug(strong_vib_level, 1.0)
+                balance.tare()
+                _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+                vib_with_aug(strong_vib_level, 1.0)
+            else:
+                vib_with_aug(weak_vib_level, vib_sec_value)
+                balance.tare()
+                _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+                vib_with_aug(strong_vib_level, 1.0)
             mass = balance.read_weight()
             if mass < _noise_threshold_g():
                 success = False
@@ -109,7 +128,7 @@ def measure_bulk_density(
 
     if densities:
         ordered = sorted(densities)
-        trimmed = ordered[2:-2] if len(ordered) >= 5 else ordered
+        trimmed = ordered[1:-1] if len(ordered) >= 3 else ordered
         mean_density = statistics.mean(trimmed)
         stdev_density = statistics.pstdev(trimmed) if len(trimmed) > 1 else 0.0
     else:
@@ -164,8 +183,11 @@ def measure_tapped_density(
     consecutive_step_timeouts = 0
     vib_level_value = settings["vib_level"] if vib_level is None else vib_level
     vib_sec_value = settings["vib_sec"] if vib_sec is None else vib_sec
+    disk_number = int(active_disk_id.lstrip("Dd"))
+    large_disk = disk_number >= 7
+    effective_repeats = 5 if large_disk else (settings["repeats"] if repeats is None else repeats)
     run_all_motors(vib_level=2, duration_sec=3.0)
-    for _ in range(max(1, int(settings["repeats"] if repeats is None else repeats))):
+    for _ in range(max(1, int(effective_repeats))):
         vib_with_aug(vib_level_value, vib_sec_value)
         balance.tare()
         _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
@@ -188,7 +210,7 @@ def measure_tapped_density(
 
     if densities and success:
         ordered = sorted(densities)
-        trimmed = ordered[2:-2] if len(ordered) >= 5 else ordered
+        trimmed = ordered[1:-1] if len(ordered) >= 3 else ordered
         mean_density = statistics.mean(trimmed)
         stdev_density = statistics.pstdev(trimmed) if len(trimmed) > 1 else 0.0
     else:
