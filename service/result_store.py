@@ -2,10 +2,59 @@ from __future__ import annotations
 
 import csv
 import json
+import logging
+import subprocess
 from pathlib import Path
 from typing import Any, Iterable
 
 from service.settings_store import load_settings
+
+_logger = logging.getLogger(__name__)
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _git_push_experiment(run_dir: Path, *, update_material_db: bool) -> None:
+    """Stage the experiment folder (and optionally material_database.json) then commit and push."""
+    paths_to_add: list[str] = [str(run_dir.relative_to(_REPO_ROOT))]
+    if update_material_db:
+        paths_to_add.append("config/material_database.json")
+
+    commit_message = f"Add experiment: {run_dir.name}"
+
+    try:
+        subprocess.run(
+            ["git", "add", "--"] + paths_to_add,
+            cwd=_REPO_ROOT,
+            check=True,
+            capture_output=True,
+        )
+        # Skip commit+push if there is nothing new to commit.
+        result = subprocess.run(
+            ["git", "diff", "--cached", "--quiet"],
+            cwd=_REPO_ROOT,
+            capture_output=True,
+        )
+        if result.returncode == 0:
+            _logger.info("git push skipped: nothing to commit for %s", run_dir.name)
+            return
+        subprocess.run(
+            ["git", "commit", "-m", commit_message],
+            cwd=_REPO_ROOT,
+            check=True,
+            capture_output=True,
+        )
+        subprocess.run(
+            ["git", "push"],
+            cwd=_REPO_ROOT,
+            check=True,
+            capture_output=True,
+        )
+        _logger.info("git push succeeded for %s", run_dir.name)
+    except subprocess.CalledProcessError as exc:
+        _logger.warning(
+            "git push failed for %s: %s", run_dir.name, exc.stderr.decode(errors="replace")
+        )
 
 
 def _ensure_dir(path: Path) -> None:
@@ -338,6 +387,8 @@ def save_results(result: dict[str, Any]) -> None:
             "angle_of_repose": folder_path if repose.get("angle_deg") is not None else None,
         })
 
+    _git_push_experiment(run_dir, update_material_db=bool(result.get("update_material_database")))
+
 
 def save_single_test_result(result: dict[str, Any]) -> None:
     metadata = result["metadata"]
@@ -436,6 +487,8 @@ def save_single_test_result(result: dict[str, Any]) -> None:
                 "tapped_density_mean": density.get("mean"),
                 "tapped_density_stdev": density.get("stdev"),
             }, sources_update={"tapped_density": f"single/{folder_name}"})
+
+    _git_push_experiment(run_dir, update_material_db=bool(result.get("update_material_database")))
 
 
 def discard_results(result: dict[str, Any]) -> None:
