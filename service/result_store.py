@@ -4,6 +4,7 @@ import csv
 import json
 import logging
 import subprocess
+import threading
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -15,46 +16,55 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _git_push_experiment(run_dir: Path, *, update_material_db: bool) -> None:
-    """Stage the experiment folder (and optionally material_database.json) then commit and push."""
-    paths_to_add: list[str] = [str(run_dir.relative_to(_REPO_ROOT))]
-    if update_material_db:
-        paths_to_add.append("config/material_database.json")
+    """Stage the experiment folder (and optionally material_database.json) then commit and push.
 
-    commit_message = f"Add experiment: {run_dir.name}"
+    Runs in a background thread so the UI is not blocked.
+    """
+    def _push() -> None:
+        paths_to_add: list[str] = [str(run_dir.relative_to(_REPO_ROOT))]
+        if update_material_db:
+            paths_to_add.append("config/material_database.json")
 
-    try:
-        subprocess.run(
-            ["git", "add", "--"] + paths_to_add,
-            cwd=_REPO_ROOT,
-            check=True,
-            capture_output=True,
-        )
-        # Skip commit+push if there is nothing new to commit.
-        result = subprocess.run(
-            ["git", "diff", "--cached", "--quiet"],
-            cwd=_REPO_ROOT,
-            capture_output=True,
-        )
-        if result.returncode == 0:
-            _logger.info("git push skipped: nothing to commit for %s", run_dir.name)
-            return
-        subprocess.run(
-            ["git", "commit", "-m", commit_message],
-            cwd=_REPO_ROOT,
-            check=True,
-            capture_output=True,
-        )
-        subprocess.run(
-            ["git", "push"],
-            cwd=_REPO_ROOT,
-            check=True,
-            capture_output=True,
-        )
-        _logger.info("git push succeeded for %s", run_dir.name)
-    except subprocess.CalledProcessError as exc:
-        _logger.warning(
-            "git push failed for %s: %s", run_dir.name, exc.stderr.decode(errors="replace")
-        )
+        commit_message = f"Add experiment: {run_dir.name}"
+
+        try:
+            subprocess.run(
+                ["git", "add", "--"] + paths_to_add,
+                cwd=_REPO_ROOT,
+                check=True,
+                capture_output=True,
+            )
+            # Skip commit+push if there is nothing new to commit.
+            result = subprocess.run(
+                ["git", "diff", "--cached", "--quiet"],
+                cwd=_REPO_ROOT,
+                capture_output=True,
+            )
+            if result.returncode == 0:
+                _logger.info("git push skipped: nothing to commit for %s", run_dir.name)
+                return
+            subprocess.run(
+                ["git", "commit", "-m", commit_message],
+                cwd=_REPO_ROOT,
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                ["git", "push"],
+                cwd=_REPO_ROOT,
+                check=True,
+                capture_output=True,
+            )
+            _logger.info("git push succeeded for %s", run_dir.name)
+        except subprocess.CalledProcessError as exc:
+            _logger.warning(
+                "git push failed for %s: %s", run_dir.name, exc.stderr.decode(errors="replace")
+            )
+        except Exception as exc:
+            _logger.warning("git push failed for %s: %s", run_dir.name, exc)
+
+    thread = threading.Thread(target=_push, daemon=True)
+    thread.start()
 
 
 def _ensure_dir(path: Path) -> None:
@@ -214,8 +224,10 @@ def _update_material_database(payload: dict[str, Any], *, sources_update: dict[s
             "density_g_per_ml": None,
             "bulk_density_mean": None,
             "bulk_density_stdev": None,
+            "bulk_density_success": None,
             "tapped_density_mean": None,
             "tapped_density_stdev": None,
+            "tapped_density_success": None,
             "hausner_ratio": None,
             "hausner_class": None,
             "angle_of_repose_deg": None,
@@ -235,7 +247,8 @@ def _update_material_database(payload: dict[str, Any], *, sources_update: dict[s
     for key in update_keys:
         record[key] = payload[key]
 
-    # Recalculate Hausner ratio whenever bulk or tapped density values are present.
+    # Recalculate Hausner ratio whenever both bulk and tapped density values are present.
+    # Only calculate if both values are non-None (None indicates a failed measurement).
     bulk = record.get("bulk_density_mean")
     tapped = record.get("tapped_density_mean")
     if bulk is not None and tapped is not None and bulk > 0:
@@ -243,6 +256,9 @@ def _update_material_database(payload: dict[str, Any], *, sources_update: dict[s
         ratio = tapped / bulk
         record["hausner_ratio"] = ratio
         record["hausner_class"] = classify_hausner(ratio)
+    else:
+        record["hausner_ratio"] = None
+        record["hausner_class"] = None
 
     # Update sources tracking.
     if sources_update:
@@ -303,6 +319,52 @@ def _write_density_summary_csv(path: Path, density_data: dict[str, Any]) -> None
         })
 
 
+def save_calibration_failure_to_logs(
+    *,
+    run_id: str,
+    timestamp: str,
+    material_name: str,
+    disk_id: str,
+    settings: dict[str, Any],
+    failure_reason: str,
+) -> None:
+    """Save minimal data when Run All fails at the calibration stage.
+
+    Creates logs/all/{run_id}/result.json and records the failure in
+    material_database.json (vib_level="Failed", all other measurements null).
+    """
+    try:
+        log_root = Path(settings["paths"]["log_root"])
+        run_dir = log_root / "all" / run_id
+        _ensure_dir(run_dir)
+
+        _write_json(run_dir / "result.json", {
+            "metadata": {
+                "run_id": run_id,
+                "timestamp": timestamp,
+                "app_settings": settings,
+                "success": {
+                    "calibration": False,
+                    "bulk_density": None,
+                    "tapped_density": None,
+                    "angle_of_repose": None,
+                },
+            },
+            "calibration": None,
+            "angle_of_repose": None,
+            "hausner": None,
+        })
+
+        _update_material_database(
+            {"mat_name": material_name, "diskID": disk_id, "vib_level": "Failed"},
+            sources_update={"calibration": f"all/{run_id}"},
+        )
+
+        _git_push_experiment(run_dir, update_material_db=True)
+    except Exception as exc:
+        _logger.warning("Failed to save calibration failure data: %s", exc)
+
+
 def save_results(result: dict[str, Any]) -> None:
     result_data = result["result_data"]
     artifacts = result.get("artifacts", {})
@@ -337,10 +399,11 @@ def save_results(result: dict[str, Any]) -> None:
             calibration["time_results"],
         )
     for idx, stability_result in enumerate(calibration["stability_results"], 1):
-        _write_series_csv(
-            calibration_dir / f"{date_prefix}stability_test_{idx}.csv",
-            [stability_result],
-        )
+        if idx == 1:
+            filename = f"{date_prefix}stability.csv"
+        else:
+            filename = f"{date_prefix}stability_retry_{idx - 1}.csv"
+        _write_series_csv(calibration_dir / filename, [stability_result])
 
     _write_flowability_summary_csv(
         flowability_dir / f"{date_prefix}flowability_summary.csv",
@@ -372,10 +435,12 @@ def save_results(result: dict[str, Any]) -> None:
             "step_mass_mean": calibration["step_mass_mean"],
             "step_mass_std": calibration.get("step_mass_std"),
             "density_g_per_ml": calibration.get("density_g_per_ml"),
-            "bulk_density_mean": bulk_density["mean"],
-            "bulk_density_stdev": bulk_density["stdev"],
-            "tapped_density_mean": tapped_density["mean"],
-            "tapped_density_stdev": tapped_density["stdev"],
+            "bulk_density_mean": bulk_density["mean"] if bulk_density.get("success") else None,
+            "bulk_density_stdev": bulk_density["stdev"] if bulk_density.get("success") else None,
+            "bulk_density_success": bool(bulk_density.get("success")),
+            "tapped_density_mean": tapped_density["mean"] if tapped_density.get("success") else None,
+            "tapped_density_stdev": tapped_density["stdev"] if tapped_density.get("success") else None,
+            "tapped_density_success": bool(tapped_density.get("success")),
             "hausner_ratio": hausner["ratio"],
             "hausner_class": hausner["class"],
             "angle_of_repose_deg": repose.get("angle_deg"),
@@ -421,7 +486,11 @@ def save_single_test_result(result: dict[str, Any]) -> None:
                 calibration["time_results"],
             )
         for idx, sr in enumerate(calibration["stability_results"], 1):
-            _write_series_csv(run_dir / f"{date_prefix}stability_test_{idx}.csv", [sr])
+            if idx == 1:
+                filename = f"{date_prefix}stability.csv"
+            else:
+                filename = f"{date_prefix}stability_retry_{idx - 1}.csv"
+            _write_series_csv(run_dir / filename, [sr])
         for payload in artifacts.values():
             (run_dir / payload["filename"]).write_bytes(payload["data"])
         if result.get("update_material_database"):
@@ -462,11 +531,13 @@ def save_single_test_result(result: dict[str, Any]) -> None:
             density,
         )
         if result.get("update_material_database"):
+            bulk_ok = density.get("success", False)
             _update_material_database({
                 "mat_name": material_name,
                 "diskID": metadata["app_settings"]["material"]["disk_id"],
-                "bulk_density_mean": density.get("mean"),
-                "bulk_density_stdev": density.get("stdev"),
+                "bulk_density_mean": density.get("mean") if bulk_ok else None,
+                "bulk_density_stdev": density.get("stdev") if bulk_ok else None,
+                "bulk_density_success": bool(bulk_ok),
             }, sources_update={"bulk_density": f"single/{folder_name}"})
 
     elif stage == "tapped_density":
@@ -481,11 +552,13 @@ def save_single_test_result(result: dict[str, Any]) -> None:
             density,
         )
         if result.get("update_material_database"):
+            tapped_ok = density.get("success", False)
             _update_material_database({
                 "mat_name": material_name,
                 "diskID": metadata["app_settings"]["material"]["disk_id"],
-                "tapped_density_mean": density.get("mean"),
-                "tapped_density_stdev": density.get("stdev"),
+                "tapped_density_mean": density.get("mean") if tapped_ok else None,
+                "tapped_density_stdev": density.get("stdev") if tapped_ok else None,
+                "tapped_density_success": bool(tapped_ok),
             }, sources_update={"tapped_density": f"single/{folder_name}"})
 
     _git_push_experiment(run_dir, update_material_db=bool(result.get("update_material_database")))

@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "app_settings": {
+      "bulk_density": {
+        "repeats": 7,
+        "strong_vib_level": 4,
+        "vib_sec_default": 1.0,
+        "weak_vib_level": 1
+      },
+      "calibration": {
+        "noise_threshold_g": 0.005,
+        "stability_steps": 7,
+        "steps_per_level": 5,
+        "vib_levels": [
+          2,
+          3
+        ],
+        "vib_time_candidates": [
+          1.0
+        ]
+      },
+      "disk_master": {
+        "D01": {
+          "volume_ml": 0.007
+        },
+        "D02": {
+          "volume_ml": 0.03
+        },
+        "D03": {
+          "volume_ml": 0.075
+        },
+        "D04": {
+          "volume_ml": 0.105
+        },
+        "D05": {
+          "volume_ml": 0.26
+        },
+        "D06": {
+          "volume_ml": 0.6
+        },
+        "D07": {
+          "volume_ml": 0.9
+        },
+        "D08": {
+          "volume_ml": 1.5
+        },
+        "D09": {
+          "volume_ml": 3.5
+        },
+        "D10": {
+          "volume_ml": 5.5
+        },
+        "D11": {
+          "volume_ml": 8.0
+        }
+      },
+      "manual": {
+        "manual_camera_focus_mode": "auto",
+        "manual_camera_lens_position": 10.0,
+        "manual_dose_count": 1,
+        "manual_use_aug": true,
+        "manual_vibration_level": 1,
+        "manual_vibration_sec": 1.0
+      },
+      "material": {
+        "disk_id": "D10",
+        "material_name": "Lactopress",
+        "part_type": "metal"
+      },
+      "paths": {
+        "log_root": "logs/experiments"
+      },
+      "tapped_density": {
+        "repeats": 7,
+        "vib_level": 4,
+        "vib_sec": 3.0
+      }
+    },
+    "material_name": "Lactopress",
+    "stage": "calibration",
+    "success": true,
+    "timestamp": "20260421_135657"
+  },
+  "calibration": {
+    "density_g_per_ml": 0.5151818181818182,
+    "level_results": [
+      {
+        "cumulative": [
+          0.376,
+          0.383,
+          0.383,
+          0.383,
+          0.383
+        ],
+        "level": 2,
+        "mean_step_mass": 0.0017500000000000016,
+        "per_step": [
+          0.376,
+          0.007000000000000006,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "std_step_mass": 0.003031088913245538,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": false,
+        "successes": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "vib_time": 1.0
+      },
+      {
+        "cumulative": [
+          1.412,
+          2.984,
+          4.582,
+          6.518,
+          9.346
+        ],
+        "level": 3,
+        "mean_step_mass": 1.9835,
+        "per_step": [
+          1.412,
+          1.572,
+          1.5979999999999999,
+          1.936,
+          2.8280000000000003
+        ],
+        "std_step_mass": 0.5082762536259195,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "selected_vib_level": 3,
+    "selected_vib_time": 1.0,
+    "stability_results": [
+      {
+        "cumulative": [
+          3.473,
+          8.395,
+          13.0,
+          17.14,
+          18.392,
+          19.268,
+          20.474
+        ],
+        "level": 3,
+        "mean_step_mass": 2.8335,
+        "per_step": [
+          3.473,
+          4.922,
+          4.605,
+          4.140000000000001,
+          1.251999999999999,
+          0.8760000000000012,
+          1.2059999999999995
+        ],
+        "std_step_mass": 1.7411055635237438,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "stability_steps": 7,
+    "stability_success": true,
+    "step_count": 7,
+    "step_mass_mean": 2.8335,
+    "step_mass_std": 1.7411055635237438,
+    "steps_per_level": 5,
+    "success": true,
+    "time_results": null,
+    "vib_levels": [
+      2,
+      3
+    ],
+    "vib_time_candidates": [
+      1.0
+    ]
+  }
+}

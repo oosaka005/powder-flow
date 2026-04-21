@@ -86,6 +86,8 @@ def measure_bulk_density(
     consecutive_step_timeouts = 0
     disk_number = int(active_disk_id.lstrip("Dd"))
     large_disk = disk_number >= 7
+    # Large disk uses a fixed 5 repeats regardless of settings, because the hopper
+    # volume is limited and cannot sustain the full configured repeat count.
     effective_repeats = 5 if large_disk else (settings["repeats"] if repeats is None else repeats)
     run_all_motors(vib_level=2, duration_sec=3.0)
     for _ in range(max(1, int(effective_repeats))):
@@ -185,6 +187,8 @@ def measure_tapped_density(
     vib_sec_value = settings["vib_sec"] if vib_sec is None else vib_sec
     disk_number = int(active_disk_id.lstrip("Dd"))
     large_disk = disk_number >= 7
+    # Large disk uses a fixed 5 repeats regardless of settings, because the hopper
+    # volume is limited and cannot sustain the full configured repeat count.
     effective_repeats = 5 if large_disk else (settings["repeats"] if repeats is None else repeats)
     run_all_motors(vib_level=2, duration_sec=3.0)
     for _ in range(max(1, int(effective_repeats))):
@@ -324,11 +328,16 @@ def measure_series(
     steps: int,
     noise_threshold_g: float | None = None,
     vib_fn: Callable[[int, float], None] = vib,
+    skip_first: bool = False,
 ) -> Dict[str, Any]:
     """
     Run repeated vib+step+weigh cycles and record per-step mass deltas.
+    If skip_first is True, the first measurement result is excluded from
+    mean/std/success calculations (but still stored in the raw lists).
     """
     threshold = _noise_threshold_g() if noise_threshold_g is None else float(noise_threshold_g)
+    # Pre-loop: vibrate once to clear any residual powder from the previous run, then tare.
+    vib_fn(level, vib_time)
     balance.tare()
     cumulative: List[float] = []
     per_step: List[float] = []
@@ -337,10 +346,10 @@ def measure_series(
     last_mass = 0.0
     consecutive_step_timeouts = 0
 
-    for _ in range(max(1, int(steps))):
-        vib_fn(level, vib_time)
+    for i in range(max(1, int(steps))):
         step_result, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
         step_stop_reasons.append(str(step_result["stop_reason"]))
+        vib_fn(level, vib_time)
         mass = balance.read_weight()
         delta = mass - last_mass
         success = delta >= threshold
@@ -349,8 +358,12 @@ def measure_series(
         successes.append(success)
         last_mass = mass
 
-    mean_step_mass = statistics.mean(per_step) if per_step else 0.0
-    std_step_mass = statistics.pstdev(per_step) if len(per_step) > 1 else 0.0
+    # For large disks the first result is skipped to avoid the initial settling effect.
+    eval_per_step = per_step[1:] if skip_first and len(per_step) > 1 else per_step
+    eval_successes = successes[1:] if skip_first and len(successes) > 1 else successes
+
+    mean_step_mass = statistics.mean(eval_per_step) if eval_per_step else 0.0
+    std_step_mass = statistics.pstdev(eval_per_step) if len(eval_per_step) > 1 else 0.0
     return {
         "level": level,
         "vib_time": vib_time,
@@ -358,7 +371,7 @@ def measure_series(
         "per_step": per_step,
         "successes": successes,
         "step_stop_reasons": step_stop_reasons,
-        "success_all": all(successes),
+        "success_all": all(eval_successes),
         "mean_step_mass": mean_step_mass,
         "std_step_mass": std_step_mass,
     }
@@ -372,6 +385,7 @@ def explore_levels(
     steps_per_level: int,
     noise_threshold_g: float | None = None,
     vib_fn: Callable[[int, float], None] = vib,
+    skip_first: bool = False,
 ) -> List[Dict[str, Any]]:
     """
     Try vibration levels in order and return all results.
@@ -385,6 +399,7 @@ def explore_levels(
             steps=steps_per_level,
             noise_threshold_g=noise_threshold_g,
             vib_fn=vib_fn,
+            skip_first=skip_first,
         )
         results.append(res)
     return results
@@ -398,6 +413,7 @@ def explore_times(
     steps_per_time: int,
     noise_threshold_g: float | None = None,
     vib_fn: Callable[[int, float], None] = vib,
+    skip_first: bool = False,
 ) -> List[Dict[str, Any]]:
 
     results: List[Dict[str, Any]] = []
@@ -409,6 +425,7 @@ def explore_times(
             steps=steps_per_time,
             noise_threshold_g=noise_threshold_g,
             vib_fn=vib_fn,
+            skip_first=skip_first,
         )
         results.append(res)
     return results

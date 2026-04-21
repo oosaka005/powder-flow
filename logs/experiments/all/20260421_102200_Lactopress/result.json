@@ -1,0 +1,309 @@
+{
+  "angle_of_repose": {
+    "angle_deg": 33.52590673655409,
+    "class": "Good",
+    "success": true
+  },
+  "calibration": {
+    "density_g_per_ml": 0.7102380952380953,
+    "level_results": [
+      {
+        "cumulative": [
+          0.065,
+          0.065,
+          0.065,
+          0.424,
+          0.424
+        ],
+        "level": 1,
+        "mean_step_mass": 0.0848,
+        "per_step": [
+          0.065,
+          0.0,
+          0.0,
+          0.359,
+          0.0
+        ],
+        "std_step_mass": 0.13939210881538452,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": false,
+        "successes": [
+          true,
+          false,
+          false,
+          true,
+          false
+        ],
+        "vib_time": 1.0
+      },
+      {
+        "cumulative": [
+          0.299,
+          0.64,
+          0.945,
+          1.321,
+          1.685
+        ],
+        "level": 2,
+        "mean_step_mass": 0.337,
+        "per_step": [
+          0.299,
+          0.341,
+          0.30499999999999994,
+          0.376,
+          0.3640000000000001
+        ],
+        "std_step_mass": 0.03077011537189944,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      },
+      {
+        "cumulative": [
+          0.0,
+          0.447,
+          0.875,
+          1.305,
+          1.732
+        ],
+        "level": 3,
+        "mean_step_mass": 0.3464,
+        "per_step": [
+          0.0,
+          0.447,
+          0.428,
+          0.42999999999999994,
+          0.42700000000000005
+        ],
+        "std_step_mass": 0.1733535116460004,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": false,
+        "successes": [
+          false,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "selected_vib_level": 2,
+    "selected_vib_time": 1.0,
+    "stability_results": [
+      {
+        "cumulative": [
+          0.691,
+          1.056,
+          1.45,
+          1.83,
+          2.226,
+          2.61,
+          2.983
+        ],
+        "level": 2,
+        "mean_step_mass": 0.42614285714285716,
+        "per_step": [
+          0.691,
+          0.3650000000000001,
+          0.3939999999999999,
+          0.3800000000000001,
+          0.3959999999999999,
+          0.3839999999999999,
+          0.3730000000000002
+        ],
+        "std_step_mass": 0.10860074792090331,
+        "step_stop_reasons": [
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor",
+          "sensor"
+        ],
+        "success_all": true,
+        "successes": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "vib_time": 1.0
+      }
+    ],
+    "stability_steps": 7,
+    "stability_success": true,
+    "step_count": 7,
+    "step_mass_mean": 0.42614285714285716,
+    "step_mass_std": 0.10860074792090331,
+    "steps_per_level": 5,
+    "success": true,
+    "time_results": null,
+    "vib_levels": [
+      1,
+      2,
+      3
+    ],
+    "vib_time_candidates": [
+      1.0
+    ]
+  },
+  "hausner": {
+    "bulk_density": {
+      "densities": [
+        0.045,
+        0.04666666666666667,
+        0.5683333333333334
+      ],
+      "masses": [
+        0.027,
+        0.028,
+        0.341
+      ],
+      "mean": 0.04666666666666667,
+      "stdev": 0.0,
+      "success": false
+    },
+    "class": null,
+    "ratio": 18.292857142857144,
+    "tapped_density": {
+      "densities": [
+        0.8150000000000001,
+        0.8766666666666667,
+        0.8550000000000001,
+        0.8333333333333334,
+        0.8600000000000001,
+        0.8600000000000001,
+        0.8600000000000001
+      ],
+      "masses": [
+        0.489,
+        0.526,
+        0.513,
+        0.5,
+        0.516,
+        0.516,
+        0.516
+      ],
+      "mean": 0.8536666666666668,
+      "stdev": 0.010349449797506707,
+      "success": true
+    }
+  },
+  "metadata": {
+    "app_settings": {
+      "bulk_density": {
+        "repeats": 7,
+        "strong_vib_level": 4,
+        "vib_sec_default": 1.0,
+        "weak_vib_level": 1
+      },
+      "calibration": {
+        "noise_threshold_g": 0.005,
+        "stability_steps": 7,
+        "steps_per_level": 5,
+        "vib_levels": [
+          1,
+          2,
+          3
+        ],
+        "vib_time_candidates": [
+          1.0
+        ]
+      },
+      "disk_master": {
+        "D01": {
+          "volume_ml": 0.007
+        },
+        "D02": {
+          "volume_ml": 0.03
+        },
+        "D03": {
+          "volume_ml": 0.075
+        },
+        "D04": {
+          "volume_ml": 0.105
+        },
+        "D05": {
+          "volume_ml": 0.26
+        },
+        "D06": {
+          "volume_ml": 0.6
+        },
+        "D07": {
+          "volume_ml": 0.9
+        },
+        "D08": {
+          "volume_ml": 1.5
+        },
+        "D09": {
+          "volume_ml": 3.5
+        },
+        "D10": {
+          "volume_ml": 5.5
+        },
+        "D11": {
+          "volume_ml": 8.0
+        }
+      },
+      "manual": {
+        "manual_camera_focus_mode": "auto",
+        "manual_camera_lens_position": 10.0,
+        "manual_dose_count": 1,
+        "manual_use_aug": false,
+        "manual_vibration_level": 1,
+        "manual_vibration_sec": 1.0
+      },
+      "material": {
+        "disk_id": "D06",
+        "material_name": "Lactopress",
+        "part_type": "metal"
+      },
+      "paths": {
+        "log_root": "logs/experiments"
+      },
+      "tapped_density": {
+        "repeats": 7,
+        "vib_level": 4,
+        "vib_sec": 3.0
+      }
+    },
+    "run_id": "20260421_102200_Lactopress",
+    "success": {
+      "angle_of_repose": true,
+      "bulk_density": false,
+      "calibration": true,
+      "tapped_density": true
+    },
+    "timestamp": "20260421_102200"
+  }
+}

@@ -133,7 +133,12 @@ class MaterialDbView(QWidget):
         for row_idx, entry in enumerate(rows):
             for col_idx, (key, _) in enumerate(_COLUMNS):
                 value = entry.get(key)
-                text = _fmt(key, value)
+                if key == "bulk_density_mean" and entry.get("bulk_density_success") is False:
+                    text = "Failed"
+                elif key == "tapped_density_mean" and entry.get("tapped_density_success") is False:
+                    text = "Failed"
+                else:
+                    text = _fmt(key, value)
                 item = QTableWidgetItem(text)
                 item.setTextAlignment(Qt.AlignCenter)
                 self._table.setItem(row_idx, col_idx, item)

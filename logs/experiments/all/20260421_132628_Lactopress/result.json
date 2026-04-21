@@ -1,0 +1,10 @@
+{
+  "metadata": {
+    "run_id": "20260421_132628_Lactopress",
+    "timestamp": "20260421_132628",
+    "material_name": "Lactopress",
+    "disk_id": "D01",
+    "calibration_failed": true,
+    "failure_reason": "Calibration priming failed: Mass did not increase before max_cycles reached."
+  }
+}

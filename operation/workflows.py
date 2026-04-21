@@ -49,6 +49,48 @@ def _raise_stage_error(stage: str, exc: Exception) -> None:
     raise RuntimeError(f"{stage} failed: {exc}") from exc
 
 
+def _validate_density_against_stability(
+    density_data: dict[str, Any],
+    stability_density: float | None,
+    label: str,
+    hooks: FlowHooks | None = None,
+) -> None:
+    """Set success=False if measured density deviates more than 3× from stability density."""
+    if not density_data.get("success"):
+        return
+    if stability_density is None or stability_density <= 0:
+        return
+    mean = density_data.get("mean")
+    if mean is None:
+        return
+    if mean < stability_density / 3 or mean > stability_density * 3:
+        density_data["success"] = False
+        _log(
+            hooks,
+            f"{label}: measured density {mean:.4f} g/mL is outside acceptable range "
+            f"[{stability_density / 3:.4f}, {stability_density * 3:.4f}] "
+            f"relative to stability density {stability_density:.4f} g/mL — marked as failed",
+        )
+
+
+def _load_stability_density_from_db(material_name: str, disk_id: str) -> float | None:
+    """Look up the stability calibration density for a material from the material database."""
+    import json
+    db_path = Path(__file__).resolve().parents[1] / "config" / "material_database.json"
+    if not db_path.exists():
+        return None
+    try:
+        with db_path.open("r", encoding="utf-8") as handle:
+            records = json.load(handle)
+        for row in records:
+            if row.get("mat_name") == material_name and row.get("diskID") == disk_id:
+                value = row.get("density_g_per_ml")
+                return float(value) if value is not None else None
+    except Exception:
+        return None
+    return None
+
+
 def _ensure_not_cancelled(token: CancellationToken | None) -> None:
     if token and token.cancelled:
         raise FlowAbortedError("Operation was aborted by user.")
@@ -273,30 +315,44 @@ def run_automated_experiment(
         _log_stage(hooks, "Starting automated experiment")
 
         _ensure_not_cancelled(cancel_token)
-        _log_stage(hooks, "Calibration: priming dispenser")
         try:
-            prime_p_dispenser(balance)
+            _log_stage(hooks, "Calibration: priming dispenser")
+            try:
+                prime_p_dispenser(balance)
+            except FlowAbortedError:
+                raise
+            except Exception as exc:
+                _raise_stage_error("Calibration priming", exc)
+            _log(hooks, "Priming completed")
+
+            calibration_result = _run_calibration(
+                balance=balance,
+                material_name=material_name,
+                timestamp=timestamp,
+                vib_levels=vib_levels,
+                vib_time_candidates=vib_time_candidates,
+                steps_per_level=steps_per_level,
+                stability_steps=stability_steps,
+                disk_id=disk_id,
+                date_prefix=date_prefix,
+                hooks=hooks,
+                cancel_token=cancel_token,
+            )
+            artifacts.update(calibration_result["artifacts"])
+            calibration_data = calibration_result["calibration"]
         except FlowAbortedError:
             raise
         except Exception as exc:
-            _raise_stage_error("Calibration priming", exc)
-        _log(hooks, "Priming completed")
-
-        calibration_result = _run_calibration(
-            balance=balance,
-            material_name=material_name,
-            timestamp=timestamp,
-            vib_levels=vib_levels,
-            vib_time_candidates=vib_time_candidates,
-            steps_per_level=steps_per_level,
-            stability_steps=stability_steps,
-            disk_id=disk_id,
-            date_prefix=date_prefix,
-            hooks=hooks,
-            cancel_token=cancel_token,
-        )
-        artifacts.update(calibration_result["artifacts"])
-        calibration_data = calibration_result["calibration"]
+            from service.result_store import save_calibration_failure_to_logs
+            save_calibration_failure_to_logs(
+                run_id=run_id,
+                timestamp=timestamp,
+                material_name=material_name,
+                disk_id=disk_id,
+                settings=settings,
+                failure_reason=str(exc),
+            )
+            raise
 
         bulk_density_result = _run_bulk_density(
             balance=balance,
@@ -308,6 +364,12 @@ def run_automated_experiment(
         )
         artifacts.update(bulk_density_result["artifacts"])
         bulk_density_data = bulk_density_result["bulk_density"]
+        stability_density = (
+            calibration_data.get("density_g_per_ml")
+            if calibration_data.get("success")
+            else None
+        )
+        _validate_density_against_stability(bulk_density_data, stability_density, "Bulk density", hooks)
         mean_bulk = bulk_density_data["mean"]
         bulk_success = bool(bulk_density_data["success"])
 
@@ -332,17 +394,22 @@ def run_automated_experiment(
         )
         artifacts.update(tapped_density_result["artifacts"])
         tapped_density_data = tapped_density_result["tapped_density"]
+        _validate_density_against_stability(tapped_density_data, stability_density, "Tapped density", hooks)
         mean_tapped = tapped_density_data["mean"]
         tapped_success = bool(tapped_density_data["success"])
         hausner_ratio = (
             mean_tapped / mean_bulk
-            if mean_bulk is not None and mean_tapped is not None and mean_bulk
+            if (
+                bulk_success
+                and tapped_success
+                and mean_bulk is not None
+                and mean_tapped is not None
+                and mean_bulk
+            )
             else None
         )
         hausner_class = (
-            classify_hausner(hausner_ratio)
-            if hausner_ratio is not None and bulk_success and tapped_success
-            else None
+            classify_hausner(hausner_ratio) if hausner_ratio is not None else None
         )
         _log(
             hooks,
@@ -473,6 +540,11 @@ def run_single_test(
 
         artifacts.update(stage_result["artifacts"])
         stage_data = stage_result[result_key]
+
+        if stage_key in {"bulk_density", "tapped_density"}:
+            stability_density = _load_stability_density_from_db(material_name, disk_id)
+            label = "Bulk density" if stage_key == "bulk_density" else "Tapped density"
+            _validate_density_against_stability(stage_data, stability_density, label, hooks)
     finally:
         if balance is not None:
             balance.disconnect()
@@ -520,6 +592,8 @@ def _run_calibration(
     _ensure_not_cancelled(cancel_token)
     _log_stage(hooks, "Calibration: optimizing vibration conditions (level and time)")
     try:
+        disk_number = int(disk_id.lstrip("Dd"))
+        large_disk = disk_number >= 7
         vib_time = vib_time_candidates[0]
         level_results = explore_levels(
             balance,
@@ -527,6 +601,7 @@ def _run_calibration(
             vib_time=vib_time,
             steps_per_level=steps_per_level,
             vib_fn=vib_with_aug,
+            skip_first=large_disk,
         )
         has_level_success = any(res["success_all"] for res in level_results)
         optimal_level = select_optimal_series(level_results) if has_level_success else None
@@ -542,6 +617,7 @@ def _run_calibration(
                 vib_times=vib_time_candidates,
                 steps_per_time=steps_per_level,
                 vib_fn=vib_with_aug,
+                skip_first=large_disk,
             )
             has_time_success = any(res["success_all"] for res in time_results)
             if has_time_success:
@@ -561,6 +637,8 @@ def _run_calibration(
     _ensure_not_cancelled(cancel_token)
     _log_stage(hooks, "Calibration: running stability test")
     try:
+        disk_number = int(disk_id.lstrip("Dd"))
+        large_disk = disk_number >= 7
         stability_results = []
         stability_result = measure_series(
             balance,
@@ -568,6 +646,7 @@ def _run_calibration(
             vib_time=vib_time,
             steps=stability_steps,
             vib_fn=vib_with_aug,
+            skip_first=large_disk,
         )
         stability_results.append(stability_result)
 
@@ -582,6 +661,7 @@ def _run_calibration(
                     vib_time=vib_time,
                     steps=stability_steps,
                     vib_fn=vib_with_aug,
+                    skip_first=large_disk,
                 )
                 stability_results.append(retry_result)
                 if retry_result["success_all"]:
@@ -778,12 +858,25 @@ def _run_repose(
             "artifacts": artifacts,
         }
 
-    _log(
-        hooks,
-        "Angle of repose result: "
-        f"angle={_format_optional(mean_angle, digits=2, suffix=' deg')}, "
-        f"class={classify_repose(mean_angle)}",
+    _REPOSE_ANGLE_MIN = 10.0
+    _REPOSE_ANGLE_MAX = 80.0
+    repose_success = (
+        mean_angle is not None
+        and _REPOSE_ANGLE_MIN <= mean_angle <= _REPOSE_ANGLE_MAX
     )
+    if mean_angle is not None and not repose_success:
+        _log(
+            hooks,
+            f"Angle of repose result: angle={mean_angle:.2f} deg is outside valid range "
+            f"[{_REPOSE_ANGLE_MIN}, {_REPOSE_ANGLE_MAX}] — marked as failed",
+        )
+    else:
+        _log(
+            hooks,
+            "Angle of repose result: "
+            f"angle={_format_optional(mean_angle, digits=2, suffix=' deg')}, "
+            f"class={classify_repose(mean_angle)}",
+        )
 
     return {
         "metadata": {
@@ -792,8 +885,8 @@ def _run_repose(
         },
         "angle_of_repose": {
             "angle_deg": mean_angle,
-            "class": classify_repose(mean_angle),
-            "success": mean_angle is not None,
+            "class": classify_repose(mean_angle) if repose_success else None,
+            "success": repose_success,
         },
         "artifacts": artifacts,
     }

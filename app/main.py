@@ -75,13 +75,21 @@ def main() -> int:
         stack.setCurrentWidget(mode_tabs)
 
     def _save_result() -> None:
-        save_results(result_view.current_result())
+        try:
+            save_results(result_view.current_result())
+        except Exception:
+            import traceback
+            traceback.print_exc()
         material_db_view._load_db()
         result_view.set_status("Result saved. Returning to setup...")
         _show_setting()
 
     def _save_single_test_result() -> None:
-        save_single_test_result(result_view.current_result())
+        try:
+            save_single_test_result(result_view.current_result())
+        except Exception:
+            import traceback
+            traceback.print_exc()
         material_db_view._load_db()
         result_view.set_status("Result saved. Returning to single test...")
         _show_single_test()

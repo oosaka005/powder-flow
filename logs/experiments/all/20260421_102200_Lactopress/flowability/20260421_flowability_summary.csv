@@ -1,0 +1,2 @@
+material_name,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,hausner_class,angle_of_repose_deg,repose_class
+Lactopress,metal,D06,20260421_102200,2,1.0,0.04666666666666667,0.0,0.8536666666666668,0.010349449797506707,18.292857142857144,,33.52590673655409,Good
