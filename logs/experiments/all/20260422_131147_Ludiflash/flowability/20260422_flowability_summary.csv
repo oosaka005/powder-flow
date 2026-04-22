@@ -1,0 +1,2 @@
+material_name,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,hausner_class,angle_of_repose_deg,repose_class
+Ludiflash,metal,D08,20260422_131147,1,1.0,0.7544444444444445,0.022485111672250587,0.9684444444444444,0.000628539361054692,1.2836524300441825,Passable,8.406502368219172,

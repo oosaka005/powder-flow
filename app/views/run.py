@@ -9,6 +9,7 @@ from PySide6.QtCore import QObject, QThread, QTimer, Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QPushButton,
     QTextEdit,
     QVBoxLayout,
@@ -114,6 +115,18 @@ class RunView(QWidget):
         settings = load_settings()
         material = settings["material"]
         calibration = settings["calibration"]
+
+        material_name = material["material_name"]
+        disk_id = material["disk_id"]
+        answer = QMessageBox.question(
+            self,
+            "Confirm — Run All",
+            f"Material: {material_name}\nDisk ID: {disk_id}\n\nこの条件で実験を開始しますか？\n(Start the automated experiment with these conditions?)",
+            QMessageBox.Yes | QMessageBox.Cancel,
+            QMessageBox.Cancel,
+        )
+        if answer != QMessageBox.Yes:
+            return
 
         self.log_text.clear()
         self._can_return_to_setup = False

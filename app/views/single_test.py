@@ -24,6 +24,7 @@ from operation.workflows import (
     run_single_test,
 )
 from operation.step_timing_probe import measure_step_sensor_timing
+from service.settings_store import load_settings
 
 
 class SingleTestView(QWidget):
@@ -127,7 +128,7 @@ class SingleTestView(QWidget):
     def _start_stage(self, stage: str, label: str) -> None:
         if self._thread is not None:
             return
-        if stage not in {"prep_dispense", "step_timing", "capture_image"} and not self._confirm_stage_start(label):
+        if stage not in {"prep_dispense", "step_timing", "capture_image"} and not self._confirm_stage_start(stage, label):
             return
         self._cancel_token = CancellationToken()
         self.status_label.setText(f"Status: Running {label}...")
@@ -146,16 +147,19 @@ class SingleTestView(QWidget):
         self._thread.finished.connect(self._cleanup_worker)
         self._thread.start()
 
-    def _confirm_stage_start(self, label: str) -> bool:
-        message = (
-            f"Are the required preparations complete for {label}?\n\n"
-            "Confirm that priming has already been completed.\n"
-            "If this is Angle of Repose, confirm that enough powder has been dispensed in advance.\n"
-            "If you are not ready yet, use Prep Dispense in the lower-left corner before starting the test."
-        )
+    def _confirm_stage_start(self, stage: str, label: str) -> bool:
+        settings = load_settings()
+        material_name = settings["material"]["material_name"]
+        disk_id = settings["material"]["disk_id"]
+        header = f"Material: {material_name}\nDisk ID: {disk_id}"
+        if stage == "angle_of_repose":
+            detail = "粉体の山はできていますか？\n(Has the powder pile been formed?)"
+        else:
+            detail = "材料のプライミングは完了していますか？\n(Has the material priming been completed?)"
+        message = f"{header}\n\n{detail}"
         answer = QMessageBox.question(
             self,
-            "Confirm Test Start",
+            f"Confirm — {label}",
             message,
             QMessageBox.Yes | QMessageBox.Cancel,
             QMessageBox.Cancel,

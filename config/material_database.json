@@ -528,5 +528,61 @@
       "tapped_density": "single/20260421_144351_Lactopress_tapped_density",
       "angle_of_repose": "single/20260421_140059_Lactopress_angle_of_repose"
     }
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "Ludiflash",
+    "diskID": "D08",
+    "volume_ml": 1.5,
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 1.1925,
+    "step_mass_std": 0.04181207959429915,
+    "density_g_per_ml": 0.7949999999999999,
+    "bulk_density_mean": 0.7544444444444445,
+    "bulk_density_stdev": 0.022485111672250587,
+    "bulk_density_success": true,
+    "tapped_density_mean": 0.9684444444444444,
+    "tapped_density_stdev": 0.000628539361054692,
+    "tapped_density_success": true,
+    "hausner_ratio": 1.2836524300441825,
+    "hausner_class": "Passable",
+    "angle_of_repose_deg": 8.406502368219172,
+    "repose_class": null,
+    "sources": {
+      "calibration": "all/20260422_131147_Ludiflash",
+      "bulk_density": "all/20260422_131147_Ludiflash",
+      "tapped_density": "all/20260422_131147_Ludiflash",
+      "angle_of_repose": "all/20260422_131147_Ludiflash"
+    }
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "Ludiflash",
+    "diskID": "D10",
+    "volume_ml": 5.5,
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 3.2635,
+    "step_mass_std": 0.06971549325652082,
+    "density_g_per_ml": 0.5933636363636364,
+    "bulk_density_mean": 0.6003636363636363,
+    "bulk_density_stdev": 0.019948694524282575,
+    "bulk_density_success": true,
+    "tapped_density_mean": 0.7223030303030303,
+    "tapped_density_stdev": 0.003563924952239789,
+    "tapped_density_success": true,
+    "hausner_ratio": 1.2031092267312742,
+    "hausner_class": "Fair",
+    "angle_of_repose_deg": 28.714020305133065,
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": "single/20260422_132328_Ludiflash_calibration",
+      "bulk_density": "single/20260422_132619_Ludiflash_bulk_density",
+      "tapped_density": "single/20260422_132955_Ludiflash_tapped_density",
+      "angle_of_repose": "single/20260422_132502_Ludiflash_angle_of_repose"
+    }
   }
 ]
