@@ -604,13 +604,41 @@
     "tapped_density_success": true,
     "hausner_ratio": 1.1502242152466369,
     "hausner_class": "Good",
-    "angle_of_repose_deg": 21.043752073040523,
+    "angle_of_repose_deg": 23.968299936781484,
     "repose_class": "Excellent",
     "sources": {
       "calibration": "all/20260423_105750_NEUSILIN US2",
       "bulk_density": "all/20260423_105750_NEUSILIN US2",
       "tapped_density": "all/20260423_105750_NEUSILIN US2",
-      "angle_of_repose": "all/20260423_105750_NEUSILIN US2"
+      "angle_of_repose": "single/20260423_114245_NEUSILIN US2_angle_of_repose"
+    }
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "NEUSILIN US2",
+    "diskID": "D10",
+    "volume_ml": 5.5,
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.8079999999999999,
+    "step_mass_std": 0.028065399813055676,
+    "density_g_per_ml": 0.1469090909090909,
+    "bulk_density_mean": 0.16048484848484848,
+    "bulk_density_stdev": 0.0025812775077632554,
+    "bulk_density_success": true,
+    "tapped_density_mean": 0.18187878787878786,
+    "tapped_density_stdev": 8.57099128710789e-05,
+    "tapped_density_success": true,
+    "hausner_ratio": 1.133308157099698,
+    "hausner_class": "Good",
+    "angle_of_repose_deg": 18.952551789448457,
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": "single/20260423_114952_NEUSILIN US2_calibration",
+      "bulk_density": "single/20260423_115247_NEUSILIN US2_bulk_density",
+      "tapped_density": "single/20260423_115438_NEUSILIN US2_tapped_density",
+      "angle_of_repose": "single/20260423_115129_NEUSILIN US2_angle_of_repose"
     }
   }
 ]
