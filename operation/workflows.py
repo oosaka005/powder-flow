@@ -795,15 +795,12 @@ def _run_repose(
     hooks: FlowHooks | None = None,
     cancel_token: CancellationToken | None = None,
 ) -> dict[str, Any]:
-    from hardware_api.powder_dispenser.p_dispenser_HAT_api import run_all_motors
     from operation.powder_flow_api import capture_and_analyze_repose, classify_repose
     from hardware_api.camera.camera_api import capture_powder_image
 
     _ensure_not_cancelled(cancel_token)
     _log_stage(hooks, "Flowability: measuring angle of repose")
     try:
-        run_all_motors(1, 5.0)
-
         _ensure_not_cancelled(cancel_token)
         artifacts: dict[str, Any] = {}
         mean_angle: float | None = None

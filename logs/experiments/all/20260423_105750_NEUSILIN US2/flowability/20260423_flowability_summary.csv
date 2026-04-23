@@ -1,0 +1,2 @@
+material_name,part_type,disk_id,measurement_date,vib_level,vib_sec,bulk_density_mean,bulk_density_stdev,tapped_density_mean,tapped_density_stdev,hausner_ratio,hausner_class,angle_of_repose_deg,repose_class
+NEUSILIN US2,metal,D08,20260423_105750,1,1.0,0.19822222222222222,0.013425606637327298,0.228,0.002372684056006941,1.1502242152466369,Good,21.043752073040523,Excellent

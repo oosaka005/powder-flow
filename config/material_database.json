@@ -584,5 +584,33 @@
       "tapped_density": "single/20260422_132955_Ludiflash_tapped_density",
       "angle_of_repose": "single/20260422_132502_Ludiflash_angle_of_repose"
     }
+  },
+  {
+    "dispenserID": "powder_dispenser",
+    "mat_name": "NEUSILIN US2",
+    "diskID": "D08",
+    "volume_ml": 1.5,
+    "vib_level": 1,
+    "vib_time": 1.0,
+    "used_aug": true,
+    "step_mass_mean": 0.3123333333333333,
+    "step_mass_std": 0.00292498812913071,
+    "density_g_per_ml": 0.2082222222222222,
+    "bulk_density_mean": 0.19822222222222222,
+    "bulk_density_stdev": 0.013425606637327298,
+    "bulk_density_success": true,
+    "tapped_density_mean": 0.228,
+    "tapped_density_stdev": 0.002372684056006941,
+    "tapped_density_success": true,
+    "hausner_ratio": 1.1502242152466369,
+    "hausner_class": "Good",
+    "angle_of_repose_deg": 21.043752073040523,
+    "repose_class": "Excellent",
+    "sources": {
+      "calibration": "all/20260423_105750_NEUSILIN US2",
+      "bulk_density": "all/20260423_105750_NEUSILIN US2",
+      "tapped_density": "all/20260423_105750_NEUSILIN US2",
+      "angle_of_repose": "all/20260423_105750_NEUSILIN US2"
+    }
   }
 ]
