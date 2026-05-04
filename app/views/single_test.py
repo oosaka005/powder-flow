@@ -153,9 +153,9 @@ class SingleTestView(QWidget):
         disk_id = settings["material"]["disk_id"]
         header = f"Material: {material_name}\nDisk ID: {disk_id}"
         if stage == "angle_of_repose":
-            detail = "粉体の山はできていますか？\n(Has the powder pile been formed?)"
+            detail = "Has the powder pile been formed?"
         else:
-            detail = "材料のプライミングは完了していますか？\n(Has the material priming been completed?)"
+            detail = "Has the material priming been completed?"
         message = f"{header}\n\n{detail}"
         answer = QMessageBox.question(
             self,

@@ -121,7 +121,7 @@ class RunView(QWidget):
         answer = QMessageBox.question(
             self,
             "Confirm — Run All",
-            f"Material: {material_name}\nDisk ID: {disk_id}\n\nこの条件で実験を開始しますか？\n(Start the automated experiment with these conditions?)",
+            f"Material: {material_name}\nDisk ID: {disk_id}\n\nStart the automated experiment with these conditions?",
             QMessageBox.Yes | QMessageBox.Cancel,
             QMessageBox.Cancel,
         )
