@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/gussa/OneDrive - SEKISUI CHEMICAL CO.,LTD/ドキュメント/powder-flow/**)",
+      "Bash(cat \"C:/Users/gussa/OneDrive - SEKISUI CHEMICAL CO.,LTD/ドキュメント/powder-flow/logs/experiments/all/20260423_105750_NEUSILIN US2/calibration/\"*.csv)",
+      "Bash(cat \"C:/Users/gussa/OneDrive - SEKISUI CHEMICAL CO.,LTD/ドキュメント/powder-flow/logs/experiments/all/20260421_134337_Lactopress/calibration/\"*stability*.csv)",
+      "Bash(cat \"C:/Users/gussa/OneDrive - SEKISUI CHEMICAL CO.,LTD/ドキュメント/powder-flow/logs/experiments/all/20260409_132357_Ludiflash/flowability/\"*raw*.csv)",
+      "Bash(python create_verification.py)",
+      "Bash(python scripts/recalc.py \"C:/Users/gussa/OneDrive - SEKISUI CHEMICAL CO.,LTD/ドキュメント/powder-flow/powder_flow_verification.xlsx\")",
+      "Bash(python -)",
+      "Bash(2>&1)"
+    ]
+  }
+}

@@ -9,7 +9,7 @@ import RPi.GPIO as GPIO
 from adafruit_motorkit import MotorKit
 
 # IR beam sensor input
-IR_SENSOR_PIN = 24  # Physical pin 18
+IR_SENSOR_PIN = 15  # Physical pin 10 / HAT RXD (shared with UART RX; safe because liquid/powder modes are physically exclusive via magnetic connector)
 IR_ACTIVE_LEVEL = 1  # 黒が検出されたら1
 IR_INACTIVE_LEVEL = 0
 IR_DEBOUNCE_SEC = 0.010
