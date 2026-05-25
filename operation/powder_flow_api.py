@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import statistics
+import time
 from typing import Any, Callable, Dict, List, Optional
 
 from hardware_api.balance.balance_api import Balance
@@ -13,8 +14,10 @@ import threading
 
 from hardware_api.powder_dispenser.p_dispenser_HAT_api import (
     aug,
+    drive_motor,
     run_all_motors,
     step,
+    stop_motor,
     vib,
 )
 from hardware_api.camera.camera_api import capture_powder_image
@@ -55,12 +58,30 @@ def _noise_threshold_g() -> float:
     return float(_current_settings()["calibration"]["noise_threshold_g"])
 
 
-def _guarded_step(consecutive_timeouts: int) -> tuple[dict[str, Any], int]:
+def _guarded_step(
+    consecutive_timeouts: int,
+    *,
+    on_log: Callable[[str], None] | None = None,
+) -> tuple[dict[str, Any], int]:
     result = step()
+    if on_log:
+        elapsed = float(result.get("elapsed_sec", 0.0))
+        on_log(
+            "[debug step] "
+            f"success={result.get('success')}, "
+            f"reason={result.get('stop_reason')}, "
+            f"elapsed={elapsed:.4f}s, "
+            f"timeouts={consecutive_timeouts}/{MAX_CONSECUTIVE_STEP_TIMEOUTS}"
+        )
     if result["success"]:
         return result, 0
 
     consecutive_timeouts += 1
+    if on_log:
+        on_log(
+            "[debug step] "
+            f"timeout incremented to {consecutive_timeouts}/{MAX_CONSECUTIVE_STEP_TIMEOUTS}"
+        )
     if consecutive_timeouts >= MAX_CONSECUTIVE_STEP_TIMEOUTS:
         raise RuntimeError(
             f"Step safety timeout reached {MAX_CONSECUTIVE_STEP_TIMEOUTS} consecutive times."
@@ -73,12 +94,10 @@ def measure_bulk_density(
     *,
     disk_id: str | None = None,
     repeats: int | None = None,
-    vib_sec: float | None = None,
+    on_log: Callable[[str], None] | None = None,
 ) -> tuple[float | None, float | None, list[float], bool]:
     settings = _bulk_density_settings()
-    weak_vib_level = settings["weak_vib_level"]
     strong_vib_level = settings["strong_vib_level"]
-    vib_sec_value = settings["vib_sec_default"] if vib_sec is None else vib_sec
     active_disk_id = disk_id or _material_settings()["disk_id"]
     volume = _load_disk_volume(active_disk_id)
     densities: list[float] = []
@@ -92,16 +111,25 @@ def measure_bulk_density(
     run_all_motors(vib_level=2, duration_sec=3.0)
     for _ in range(max(1, int(effective_repeats))):
         if large_disk:
-            vib_with_aug(weak_vib_level, vib_sec_value)
-            _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
-            vib_with_aug(strong_vib_level, 1.0)
+            pack_powder(1)
+            _, consecutive_step_timeouts = _guarded_step(
+                consecutive_step_timeouts,
+                on_log=on_log,
+            )
+            vib_with_aug(strong_vib_level, 1.5)
             balance.tare()
-            _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
-            vib_with_aug(strong_vib_level, 1.0)
+            _, consecutive_step_timeouts = _guarded_step(
+                consecutive_step_timeouts,
+                on_log=on_log,
+            )
+            vib_with_aug(strong_vib_level, 1.5)
         else:
-            vib_with_aug(weak_vib_level, vib_sec_value)
+            pack_powder(1)
             balance.tare()
-            _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+            _, consecutive_step_timeouts = _guarded_step(
+                consecutive_step_timeouts,
+                on_log=on_log,
+            )
             vib_with_aug(strong_vib_level, 1.0)
         mass = balance.read_weight()
         if mass < _noise_threshold_g():
@@ -110,23 +138,35 @@ def measure_bulk_density(
                 break
             # Flush one cycle after recovery before recording data.
             if large_disk:
-                vib_with_aug(weak_vib_level, vib_sec_value)
-                _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
-                vib_with_aug(strong_vib_level, 1.0)
+                pack_powder(1)
+                _, consecutive_step_timeouts = _guarded_step(
+                    consecutive_step_timeouts,
+                    on_log=on_log,
+                )
+                vib_with_aug(strong_vib_level, 1.5)
                 balance.tare()
-                _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
-                vib_with_aug(strong_vib_level, 1.0)
+                _, consecutive_step_timeouts = _guarded_step(
+                    consecutive_step_timeouts,
+                    on_log=on_log,
+                )
+                vib_with_aug(strong_vib_level, 1.5)
             else:
-                vib_with_aug(weak_vib_level, vib_sec_value)
+                pack_powder(1)
                 balance.tare()
-                _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+                _, consecutive_step_timeouts = _guarded_step(
+                    consecutive_step_timeouts,
+                    on_log=on_log,
+                )
                 vib_with_aug(strong_vib_level, 1.0)
             mass = balance.read_weight()
             if mass < _noise_threshold_g():
                 success = False
                 break
         densities.append(mass / volume)
-        _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+        _, consecutive_step_timeouts = _guarded_step(
+            consecutive_step_timeouts,
+            on_log=on_log,
+        )
 
     if densities:
         ordered = sorted(densities)
@@ -192,7 +232,7 @@ def measure_tapped_density(
     effective_repeats = 5 if large_disk else (settings["repeats"] if repeats is None else repeats)
     run_all_motors(vib_level=2, duration_sec=3.0)
     for _ in range(max(1, int(effective_repeats))):
-        vib_with_aug(vib_level_value, vib_sec_value)
+        pack_powder(vib_level_value)
         balance.tare()
         _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
         vib_with_aug(vib_level_value, 2.0)
@@ -202,7 +242,7 @@ def measure_tapped_density(
                 success = False
                 break
             # Flush one cycle after recovery before recording data.
-            vib_with_aug(vib_level_value, vib_sec_value)
+            pack_powder(vib_level_value)
             balance.tare()
             _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
             vib_with_aug(vib_level_value, 2.0)
@@ -240,6 +280,70 @@ def vib_with_aug(vib_level: int = 2, vib_seconds: float = 3.0) -> None:
     )
     vib_thread.start()
     aug_thread.start()
+    vib_thread.join()
+    aug_thread.join()
+
+
+def pack_powder(vib_level: int, half_rot_sec: float = 0.4) -> None:
+    """Compact powder into the disk cavity by oscillating the rotation motor
+    forward and backward while running the vibration and auger motors throughout.
+
+    The rotation sequence returns the disk to its original position:
+        forward  half_rot_sec
+        reverse  half_rot_sec * 2
+        forward  half_rot_sec
+    Total rotation time: half_rot_sec * 4 + 0.2
+
+    Args:
+        vib_level: Vibration intensity (0-5).
+        half_rot_sec: Base rotation interval in seconds; all other intervals
+                      are multiples of this value.
+    """
+    direction_switch_pause_sec = 0.1
+    total_time = half_rot_sec * 8 + (direction_switch_pause_sec * 2)
+
+    # Launch vibration and auger in parallel threads so they run for the full
+    # rotation sequence without blocking the main thread.
+    vib_thread = threading.Thread(
+        target=vib,
+        args=(vib_level, total_time),
+        daemon=True,
+    )
+    aug_thread = threading.Thread(
+        target=aug,
+        args=(total_time,),
+        kwargs={"reverse": True},
+        daemon=True,
+    )
+    vib_thread.start()
+    aug_thread.start()
+
+    # Rotation oscillation sequence (PWM 150 based on measured step timing).
+    drive_motor("rot", 150, reverse=False)  # forward
+    time.sleep(half_rot_sec)
+    stop_motor("rot")
+    time.sleep(direction_switch_pause_sec)
+
+    drive_motor("rot", 150, reverse=True)   # reverse
+    time.sleep(half_rot_sec * 2)
+    stop_motor("rot")
+    time.sleep(direction_switch_pause_sec)
+
+    drive_motor("rot", 150, reverse=False)   # reverse
+    time.sleep(half_rot_sec * 2)
+    stop_motor("rot")
+    time.sleep(direction_switch_pause_sec)
+
+    drive_motor("rot", 150, reverse=True)   # reverse
+    time.sleep(half_rot_sec * 2)
+    stop_motor("rot")
+    time.sleep(direction_switch_pause_sec)
+
+    drive_motor("rot", 150, reverse=False)  # forward
+    time.sleep(half_rot_sec)
+    stop_motor("rot")
+
+    # Wait for vibration and auger to finish.
     vib_thread.join()
     aug_thread.join()
 

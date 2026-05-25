@@ -201,6 +201,10 @@ class SingleTestView(QWidget):
                 f"total={float(probe.get('total_elapsed_sec', 0.0)):.4f}s"
                 f"{timeout_text}"
             )
+        elif stage == "prep_dispense":
+            elapsed = metadata.get("step_elapsed_sec")
+            elapsed_text = f", step={elapsed:.4f}s" if elapsed is not None else ""
+            self.result_label.setText(f"Result: {stage} success={success}{elapsed_text}")
         else:
             repose = result.get("angle_of_repose", {})
             repose_error = repose.get("error") if isinstance(repose, dict) else None
@@ -251,14 +255,15 @@ class _SingleTestWorker(QObject):
                 if self._cancel_token.cancelled:
                     raise RuntimeError("Operation was aborted by user.")
                 try:
-                    step_success = run_all_motors(vib_level=3, duration_sec=1.0)
+                    step_result = run_all_motors(vib_level=3, duration_sec=1.0)
                 finally:
                     cleanup_motors()
                 self.finished.emit(
                     {
                         "metadata": {
                             "stage": self._stage,
-                            "success": bool(step_success),
+                            "success": bool(step_result["success"]),
+                            "step_elapsed_sec": float(step_result["elapsed_sec"]),
                         }
                     }
                 )

@@ -174,11 +174,11 @@ def run_clog_clear(
     _ensure_not_cancelled(cancel_token)
 
     try:
-        step_success = run_all_motors(vib_level=4, duration_sec=2.0)
+        step_result = run_all_motors(vib_level=4, duration_sec=2.0)
         return {
             "vib_level": 4,
             "duration_sec": 2.0,
-            "step_success": step_success,
+            "step_success": bool(step_result["success"]),
         }
     finally:
         cleanup_motors()
@@ -755,6 +755,7 @@ def _run_bulk_density(
         mean_bulk, stdev_bulk, bulk_densities, bulk_success = measure_bulk_density(
             balance,
             disk_id=disk_id,
+            on_log=hooks.on_log if hooks else None,
         )
     except FlowAbortedError:
         raise

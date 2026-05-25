@@ -143,8 +143,11 @@ def aug(
 def run_all_motors(
     vib_level: int,
     duration_sec: float,
-) -> bool:
-    """Run vib/aug/rot together at vib_level for duration_sec, then step once."""
+) -> dict[str, object]:
+    """Run vib/aug/rot together at vib_level for duration_sec, then step once.
+
+    Returns the step result dict with keys: success, stop_reason, elapsed_sec.
+    """
     pwm_value = vib_level_to_pwm(vib_level)
     drive_motor("vib", pwm_value)
     drive_motor("aug", 255, True)
@@ -155,7 +158,7 @@ def run_all_motors(
         stop_motor("vib")
         stop_motor("aug")
         stop_motor("rot")
-    return bool(step()["success"])
+    return step()
 
 
 def step(

@@ -1,8 +1,8 @@
 {
   "material": {
-    "material_name": "NEUSILIN US2",
+    "material_name": "Lactopress",
     "part_type": "metal",
-    "disk_id": "D10"
+    "disk_id": "D08"
   },
   "calibration": {
     "vib_levels": [
