@@ -176,6 +176,73 @@ Press **Discard Results** to discard the data and return to Setup Mode without s
 
 ---
 
+## Repository Structure
+
+```
+powder-flow/
+├── app/                        # GUI application code
+│   ├── main.py                 # Entry point; manages screen transitions
+│   ├── views/                  # One file per screen/tab
+│   │   ├── setup.py            # Setup Mode
+│   │   ├── run.py              # Run screen (during experiment)
+│   │   ├── result.py           # Result screen (review / save / discard)
+│   │   ├── manual.py           # Manual Mode
+│   │   ├── single_test.py      # Single Test Mode
+│   │   └── material_db.py      # Material DB
+│   └── widgets/                # Reusable touch-friendly UI components
+│
+├── config/                     # Device configuration files
+│   ├── app_settings.json       # Current Setup Mode settings (auto-updated by the app)
+│   ├── disk_master.csv         # Disk ID → volume (mL) look-up table
+│   ├── material_database.json  # Per-material calibration and flowability results
+│   │                           #   (updated automatically on each save)
+│   ├── P_calibration.csv       # Calibration export for use by external systems
+│   └── P_calibration.json      #   (optimal vibration condition + step mass per material/disk)
+│
+├── hardware_api/               # Hardware interface modules
+│   ├── balance/
+│   │   └── balance_api.py      # USB balance communication
+│   ├── camera/
+│   │   └── camera_api.py       # Camera module interface
+│   └── powder_dispenser/
+│       ├── p_dispenser_api.py      # Arduino-based dispenser control (not in current use)
+│       └── p_dispenser_HAT_api.py  # Raspberry Pi + Motor HAT control (current setup)
+│
+├── logs/                       # Experiment logs
+│   └── experiments/
+│       ├── all/                # Full automated experiment results
+│       │   └── <timestamp>_<material>/   # One folder per run
+│       ├── single/             # Single Test Mode results saved individually
+│       │   └── <timestamp>_<material>_<stage>/
+│       └── old/                # Results from older software versions
+│
+├── operation/                  # Logic layer connecting UI actions to hardware
+│   ├── workflows.py            # Experiment flows called by each app mode
+│   ├── powder_flow_api.py      # Measurement implementations (calibration, densities, repose)
+│   ├── repose_analysis.py      # Angle-of-repose image analysis
+│   ├── powder_flow_io.py       # CSV serialisation utilities
+│   ├── step_timing_probe.py    # Step sensor timing diagnostic
+│   ├── cli.py                  # Command-line runner for experiments
+│   └── testing/                # Hardware verification scripts
+│
+├── output/                     # Cross-run summary CSVs (appended automatically on save)
+│   ├── flowability_data.csv    # One row added per saved Automated Evaluation:
+│   │                           #   bulk density, tapped density, Hausner Ratio, angle of repose
+│   └── calibration_data.csv    # One row added per saved calibration result:
+│                               #   optimal vibration condition, step mass mean / stdev
+│
+├── service/                    # Device-agnostic shared logic
+│   ├── result_store.py         # Core save logic (writes logs, updates DB, appends output CSVs)
+│   ├── result_writer.py        # Result → CSV conversion utilities
+│   ├── settings_store.py       # app_settings.json read/write and default values
+│   └── plot_service.py         # Plot generation (e.g. angle-of-repose analysis charts)
+│
+├── run_app.sh                  # Pulls latest code, activates venv, launches the app
+└── run_app_desktop.sh          # Sets DISPLAY and calls run_app.sh (use this on the device)
+```
+
+---
+
 ## Precautions
 
 - **Load powder and install the correct disk before starting.**
