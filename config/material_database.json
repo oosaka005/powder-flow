@@ -487,17 +487,17 @@
     "bulk_density_mean": 0.28244444444444444,
     "bulk_density_stdev": 0.08493192626312811,
     "bulk_density_success": false,
-    "tapped_density_mean": 1.0095555555555555,
-    "tapped_density_stdev": 0.009306840707276384,
+    "tapped_density_mean": 1.0268888888888887,
+    "tapped_density_stdev": 0.013827865943203644,
     "tapped_density_success": true,
-    "hausner_ratio": null,
-    "hausner_class": null,
+    "hausner_ratio": 3.635719905586152,
+    "hausner_class": "Very, very poor",
     "angle_of_repose_deg": 40.86959741014424,
     "repose_class": "Passable",
     "sources": {
       "calibration": "all/20260421_134337_Lactopress",
       "bulk_density": "single/20260421_135008_Lactopress_bulk_density",
-      "tapped_density": "all/20260421_134337_Lactopress",
+      "tapped_density": "single/20260526_162108_Lactopress_tapped_density",
       "angle_of_repose": "single/20260421_134929_Lactopress_angle_of_repose"
     }
   },

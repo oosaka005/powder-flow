@@ -275,7 +275,7 @@ def vib_with_aug(vib_level: int = 2, vib_seconds: float = 3.0) -> None:
     aug_thread = threading.Thread(
         target=aug,
         args=(vib_seconds,),
-        kwargs={"reverse": True},
+        kwargs={"reverse": False},
         daemon=True,
     )
     vib_thread.start()
@@ -302,50 +302,53 @@ def pack_powder(vib_level: int, half_rot_sec: float = 0.4) -> None:
     direction_switch_pause_sec = 0.1
     total_time = half_rot_sec * 8 + (direction_switch_pause_sec * 2)
 
-    # Launch vibration and auger in parallel threads so they run for the full
-    # rotation sequence without blocking the main thread.
-    vib_thread = threading.Thread(
-        target=vib,
-        args=(vib_level, total_time),
-        daemon=True,
-    )
-    aug_thread = threading.Thread(
-        target=aug,
-        args=(total_time,),
-        kwargs={"reverse": True},
-        daemon=True,
-    )
-    vib_thread.start()
-    aug_thread.start()
+    # [TEMP TEST] aug + vib only (rotation motor disabled), fixed 5s
+    vib_with_aug(vib_level, 5.0)
 
-    # Rotation oscillation sequence (PWM 150 based on measured step timing).
-    drive_motor("rot", 150, reverse=False)  # forward
-    time.sleep(half_rot_sec)
-    stop_motor("rot")
-    time.sleep(direction_switch_pause_sec)
+    # # Launch vibration and auger in parallel threads so they run for the full
+    # # rotation sequence without blocking the main thread.
+    # vib_thread = threading.Thread(
+    #     target=vib,
+    #     args=(vib_level, total_time),
+    #     daemon=True,
+    # )
+    # aug_thread = threading.Thread(
+    #     target=aug,
+    #     args=(total_time,),
+    #     kwargs={"reverse": False},
+    #     daemon=True,
+    # )
+    # vib_thread.start()
+    # aug_thread.start()
 
-    drive_motor("rot", 150, reverse=True)   # reverse
-    time.sleep(half_rot_sec * 2)
-    stop_motor("rot")
-    time.sleep(direction_switch_pause_sec)
+    # # Rotation oscillation sequence (PWM 150 based on measured step timing).
+    # drive_motor("rot", 150, reverse=False)  # forward
+    # time.sleep(half_rot_sec)
+    # stop_motor("rot")
+    # time.sleep(direction_switch_pause_sec)
 
-    drive_motor("rot", 150, reverse=False)   # reverse
-    time.sleep(half_rot_sec * 2)
-    stop_motor("rot")
-    time.sleep(direction_switch_pause_sec)
+    # drive_motor("rot", 150, reverse=True)   # reverse
+    # time.sleep(half_rot_sec * 2)
+    # stop_motor("rot")
+    # time.sleep(direction_switch_pause_sec)
 
-    drive_motor("rot", 150, reverse=True)   # reverse
-    time.sleep(half_rot_sec * 2)
-    stop_motor("rot")
-    time.sleep(direction_switch_pause_sec)
+    # drive_motor("rot", 150, reverse=False)   # reverse
+    # time.sleep(half_rot_sec * 2)
+    # stop_motor("rot")
+    # time.sleep(direction_switch_pause_sec)
 
-    drive_motor("rot", 150, reverse=False)  # forward
-    time.sleep(half_rot_sec)
-    stop_motor("rot")
+    # drive_motor("rot", 150, reverse=True)   # reverse
+    # time.sleep(half_rot_sec * 2)
+    # stop_motor("rot")
+    # time.sleep(direction_switch_pause_sec)
 
-    # Wait for vibration and auger to finish.
-    vib_thread.join()
-    aug_thread.join()
+    # drive_motor("rot", 150, reverse=False)  # forward
+    # time.sleep(half_rot_sec)
+    # stop_motor("rot")
+
+    # # Wait for vibration and auger to finish.
+    # vib_thread.join()
+    # aug_thread.join()
 
 
 def clear_clogging(

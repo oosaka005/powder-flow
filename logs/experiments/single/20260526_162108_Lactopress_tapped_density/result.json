@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "app_settings": {
+      "bulk_density": {
+        "repeats": 7,
+        "strong_vib_level": 4,
+        "vib_sec_default": 1.0,
+        "weak_vib_level": 1
+      },
+      "calibration": {
+        "noise_threshold_g": 0.005,
+        "stability_steps": 7,
+        "steps_per_level": 5,
+        "vib_levels": [
+          1,
+          2
+        ],
+        "vib_time_candidates": [
+          1.0
+        ]
+      },
+      "disk_master": {
+        "D01": {
+          "volume_ml": 0.007
+        },
+        "D02": {
+          "volume_ml": 0.03
+        },
+        "D03": {
+          "volume_ml": 0.075
+        },
+        "D04": {
+          "volume_ml": 0.105
+        },
+        "D05": {
+          "volume_ml": 0.26
+        },
+        "D06": {
+          "volume_ml": 0.6
+        },
+        "D07": {
+          "volume_ml": 0.9
+        },
+        "D08": {
+          "volume_ml": 1.5
+        },
+        "D09": {
+          "volume_ml": 3.5
+        },
+        "D10": {
+          "volume_ml": 5.5
+        },
+        "D11": {
+          "volume_ml": 8.0
+        }
+      },
+      "manual": {
+        "manual_camera_focus_mode": "auto",
+        "manual_camera_lens_position": 10.0,
+        "manual_dose_count": 1,
+        "manual_use_aug": true,
+        "manual_vibration_level": 1,
+        "manual_vibration_sec": 1.0
+      },
+      "material": {
+        "disk_id": "D08",
+        "material_name": "Lactopress",
+        "part_type": "metal"
+      },
+      "paths": {
+        "log_root": "logs/experiments"
+      },
+      "tapped_density": {
+        "repeats": 7,
+        "vib_level": 4,
+        "vib_sec": 3.0
+      }
+    },
+    "material_name": "Lactopress",
+    "stage": "tapped_density",
+    "success": true,
+    "timestamp": "20260526_162108"
+  },
+  "tapped_density": {
+    "densities": [
+      0.656,
+      1.0073333333333332,
+      1.0446666666666666,
+      1.0366666666666666,
+      1.0366666666666666
+    ],
+    "masses": [
+      0.984,
+      1.5109999999999997,
+      1.567,
+      1.555,
+      1.555
+    ],
+    "mean": 1.0268888888888887,
+    "stdev": 0.013827865943203644,
+    "success": true
+  }
+}

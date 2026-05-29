@@ -150,7 +150,7 @@ def run_all_motors(
     """
     pwm_value = vib_level_to_pwm(vib_level)
     drive_motor("vib", pwm_value)
-    drive_motor("aug", 255, True)
+    drive_motor("aug", 255, False)
     drive_motor("rot", 255, False)
     try:
         time.sleep(max(0.0, float(duration_sec)))
