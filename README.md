@@ -38,7 +38,7 @@ cd ~/powder-flow
 ./run_app_desktop.sh
 ```
 
-This script pulls the latest code from git, activates the Python virtual environment, and launches the GUI.
+This script activates the Python virtual environment and launches the GUI.
 The application window is 800 × 480 px and is optimized for the device's touchscreen display.
 
 ---
