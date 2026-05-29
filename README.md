@@ -243,6 +243,51 @@ powder-flow/
 
 ---
 
+## GitHub Integration
+
+The source code, configuration files, and experiment logs are all tracked in this Git repository:
+**https://github.com/oosaka005/powder-flow**
+
+### Pushing code changes
+
+If you modify any code or configuration while connected to the Raspberry Pi via SSH, commit and push the changes before logging out:
+
+```bash
+git add -A
+git commit -m "Your name: brief description of the change"
+git push
+```
+
+Include **who made the change** and **what was changed** in the commit message so the history remains readable.
+
+### Pulling the latest code onto the Raspberry Pi
+
+Automatic `git pull` on app startup has been disabled.
+If someone else has pushed updates to GitHub and you want to apply them on the Raspberry Pi, run the following manually before restarting the app:
+
+```bash
+cd ~/powder-flow
+git pull
+```
+
+### What is tracked by Git
+
+Not only source code but also configuration files and experiment data are committed to the repository:
+
+| Path | Contents |
+|------|----------|
+| `config/` | Device settings, disk master, material database, calibration export |
+| `logs/` | Per-run experiment results (JSON, CSV, images) |
+| `output/` | Cross-run summary CSVs |
+
+When committing after an experiment, these files will be included automatically if you use `git add -A`.
+
+### Conflicts
+
+If `git pull` reports a merge conflict, do not attempt to resolve it manually — contact the person responsible for the codebase.
+
+---
+
 ## Precautions
 
 - **Load powder and install the correct disk before starting.**
