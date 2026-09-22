@@ -31,7 +31,22 @@ ssh sdl-5@dispensercontroller.local
 
 ## Starting the Application
 
-After connecting via SSH (or from a terminal on the device itself):
+The supported production path is now the two-layer SiLA 2 stack plus Web UI.
+Install and enable the units in `deploy/systemd`, then browse to:
+
+```text
+RPi:     http://localhost:8000
+Laptop: http://dispensercontroller.local:8000
+```
+
+For gateway-only development, with the SiLA 2 servers already running:
+
+```bash
+./run_web.sh
+```
+
+The old PySide application can still be launched for legacy development, but it
+is not the hardware acceptance-test path:
 
 ```bash
 cd ~/powder-flow
@@ -40,6 +55,26 @@ cd ~/powder-flow
 
 This script activates the Python virtual environment and launches the GUI.
 The application window is 800 × 480 px and is optimized for the device's touchscreen display.
+
+### SiLA 2 process layout
+
+| Process | Default port | Responsibility |
+|---------|--------------|----------------|
+| Existing Balance Server | 50052 | Serial balance ownership |
+| Powder Characterizer Dispenser Server | 50063 | Motor Bonnet + GPIO4 ownership |
+| Powder Characterizer Camera Server | 50064 | Camera ownership and unchanged image bytes |
+| Powder Characterizer Server | 50065 | Existing workflows, state, abort, pending results |
+| Web UI Gateway | 8000 | HTTP/WebSocket and browser UI |
+
+Server endpoints and ports are deployment environment variables; they are not
+stored in `config/app_settings.json` and are not result or Material DB keys. See
+`deploy/powder-flow.env.example`.
+
+The dispenser server scans the full I2C bus. It ignores `0x70` when that address
+is the PCA9685 All Call response and selects the one remaining individual
+address. It does not use a configured address or a hard-coded candidate range.
+Zero devices produces `waiting_for_device`; multiple individual addresses
+produce an explicit ambiguity fault.
 
 ---
 

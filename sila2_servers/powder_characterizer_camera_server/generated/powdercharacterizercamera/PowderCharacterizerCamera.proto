@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+import "SiLAFramework.proto";
+
+package sila2.com.sekisui.powdercharacterizer.powdercharacterizercamera.v1;
+
+/* Capture unchanged image bytes from the Powder Characterizer camera. */
+service PowderCharacterizerCamera {
+  /* Capture a preview using the requested focus and rotation values. */
+  rpc Capture (sila2.com.sekisui.powdercharacterizer.powdercharacterizercamera.v1.Capture_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizercamera.v1.Capture_Responses) {}
+  /* Capture a PNG with the existing angle-of-repose camera settings. */
+  rpc CaptureRepose (sila2.com.sekisui.powdercharacterizer.powdercharacterizercamera.v1.CaptureRepose_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizercamera.v1.CaptureRepose_Responses) {}
+  /* Camera server state. */
+  rpc Get_Status (sila2.com.sekisui.powdercharacterizer.powdercharacterizercamera.v1.Get_Status_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizercamera.v1.Get_Status_Responses) {}
+}
+
+/* Parameters for Capture */
+message Capture_Parameters {
+  sila2.org.silastandard.Integer Rotation = 1;  /* Rotation in degrees. */
+  sila2.org.silastandard.String AutofocusMode = 2;  /* rpicam autofocus mode. */
+  sila2.org.silastandard.Real LensPosition = 3;  /* Manual lens position; ignored unless mode is manual. */
+}
+
+/* Responses of Capture */
+message Capture_Responses {
+  sila2.org.silastandard.Binary ImageData = 1;  /* Original JPEG bytes. */
+  sila2.org.silastandard.String MediaType = 2;  /* HTTP media type. */
+  sila2.org.silastandard.String Filename = 3;  /* Suggested filename. */
+  sila2.org.silastandard.Integer Width = 4;  /* Pixel width. */
+  sila2.org.silastandard.Integer Height = 5;  /* Pixel height. */
+}
+
+/* Parameters for CaptureRepose */
+message CaptureRepose_Parameters {
+}
+
+/* Responses of CaptureRepose */
+message CaptureRepose_Responses {
+  sila2.org.silastandard.Binary ImageData = 1;  /* Original PNG bytes. */
+  sila2.org.silastandard.String MediaType = 2;  /* HTTP media type. */
+  sila2.org.silastandard.String Filename = 3;  /* Suggested filename. */
+  sila2.org.silastandard.Integer Width = 4;  /* Pixel width. */
+  sila2.org.silastandard.Integer Height = 5;  /* Pixel height. */
+}
+
+/* Parameters for Status */
+message Get_Status_Parameters {
+}
+
+/* Responses of Status */
+message Get_Status_Responses {
+  sila2.org.silastandard.String Status = 1;  /* Camera server state. */
+}

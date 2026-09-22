@@ -9,18 +9,11 @@ import statistics
 import time
 from typing import Any, Callable, Dict, List, Optional
 
-from hardware_api.balance.balance_api import Balance
-import threading
-
-from hardware_api.powder_dispenser.p_dispenser_HAT_api import (
-    aug,
-    drive_motor,
-    run_all_motors,
-    step,
-    stop_motor,
-    vib,
+from operation.device_interfaces import (
+    BalanceInterface,
+    CameraInterface,
+    PowderDispenserInterface,
 )
-from hardware_api.camera.camera_api import capture_powder_image
 from operation.repose_analysis import analyze_repose
 from service.settings_store import load_settings
 
@@ -32,6 +25,18 @@ PRIME_DISPENSER_SETTINGS = {
 }
 
 MAX_CONSECUTIVE_STEP_TIMEOUTS = 3
+
+
+def _local_dispenser() -> PowderDispenserInterface:
+    from operation.local_devices import create_local_dispenser
+
+    return create_local_dispenser()
+
+
+def _local_camera() -> CameraInterface:
+    from operation.local_devices import create_local_camera
+
+    return create_local_camera()
 
 
 def _current_settings() -> dict[str, Any]:
@@ -61,9 +66,11 @@ def _noise_threshold_g() -> float:
 def _guarded_step(
     consecutive_timeouts: int,
     *,
+    powder_dispenser: PowderDispenserInterface | None = None,
     on_log: Callable[[str], None] | None = None,
 ) -> tuple[dict[str, Any], int]:
-    result = step()
+    dispenser = powder_dispenser or _local_dispenser()
+    result = dispenser.index_chamber()
     if on_log:
         elapsed = float(result.get("elapsed_sec", 0.0))
         on_log(
@@ -90,12 +97,14 @@ def _guarded_step(
 
 
 def measure_bulk_density(
-    balance: Balance,
+    balance: BalanceInterface,
     *,
+    powder_dispenser: PowderDispenserInterface | None = None,
     disk_id: str | None = None,
     repeats: int | None = None,
     on_log: Callable[[str], None] | None = None,
 ) -> tuple[float | None, float | None, list[float], bool]:
+    dispenser = powder_dispenser or _local_dispenser()
     settings = _bulk_density_settings()
     strong_vib_level = settings["strong_vib_level"]
     active_disk_id = disk_id or _material_settings()["disk_id"]
@@ -108,56 +117,62 @@ def measure_bulk_density(
     # Large disk uses a fixed 5 repeats regardless of settings, because the hopper
     # volume is limited and cannot sustain the full configured repeat count.
     effective_repeats = 5 if large_disk else (settings["repeats"] if repeats is None else repeats)
-    run_all_motors(vib_level=2, duration_sec=3.0)
+    dispenser.run_all_motors(vib_level=2, duration_sec=3.0)
     for _ in range(max(1, int(effective_repeats))):
         if large_disk:
-            pack_powder(1)
+            pack_powder(1, powder_dispenser=dispenser)
             _, consecutive_step_timeouts = _guarded_step(
                 consecutive_step_timeouts,
+                powder_dispenser=dispenser,
                 on_log=on_log,
             )
-            vib_with_aug(strong_vib_level, 1.5)
+            vib_with_aug(strong_vib_level, 1.5, powder_dispenser=dispenser)
             balance.tare()
             _, consecutive_step_timeouts = _guarded_step(
                 consecutive_step_timeouts,
+                powder_dispenser=dispenser,
                 on_log=on_log,
             )
-            vib_with_aug(strong_vib_level, 1.5)
+            vib_with_aug(strong_vib_level, 1.5, powder_dispenser=dispenser)
         else:
-            pack_powder(1)
+            pack_powder(1, powder_dispenser=dispenser)
             balance.tare()
             _, consecutive_step_timeouts = _guarded_step(
                 consecutive_step_timeouts,
+                powder_dispenser=dispenser,
                 on_log=on_log,
             )
-            vib_with_aug(strong_vib_level, 1.0)
+            vib_with_aug(strong_vib_level, 1.0, powder_dispenser=dispenser)
         mass = balance.read_weight()
         if mass < _noise_threshold_g():
-            if not clear_clogging(balance):
+            if not clear_clogging(balance, powder_dispenser=dispenser):
                 success = False
                 break
             # Flush one cycle after recovery before recording data.
             if large_disk:
-                pack_powder(1)
+                pack_powder(1, powder_dispenser=dispenser)
                 _, consecutive_step_timeouts = _guarded_step(
                     consecutive_step_timeouts,
+                    powder_dispenser=dispenser,
                     on_log=on_log,
                 )
-                vib_with_aug(strong_vib_level, 1.5)
+                vib_with_aug(strong_vib_level, 1.5, powder_dispenser=dispenser)
                 balance.tare()
                 _, consecutive_step_timeouts = _guarded_step(
                     consecutive_step_timeouts,
+                    powder_dispenser=dispenser,
                     on_log=on_log,
                 )
-                vib_with_aug(strong_vib_level, 1.5)
+                vib_with_aug(strong_vib_level, 1.5, powder_dispenser=dispenser)
             else:
-                pack_powder(1)
+                pack_powder(1, powder_dispenser=dispenser)
                 balance.tare()
                 _, consecutive_step_timeouts = _guarded_step(
                     consecutive_step_timeouts,
+                    powder_dispenser=dispenser,
                     on_log=on_log,
                 )
-                vib_with_aug(strong_vib_level, 1.0)
+                vib_with_aug(strong_vib_level, 1.0, powder_dispenser=dispenser)
             mass = balance.read_weight()
             if mass < _noise_threshold_g():
                 success = False
@@ -165,6 +180,7 @@ def measure_bulk_density(
         densities.append(mass / volume)
         _, consecutive_step_timeouts = _guarded_step(
             consecutive_step_timeouts,
+            powder_dispenser=dispenser,
             on_log=on_log,
         )
 
@@ -210,13 +226,15 @@ def classify_hausner(hausner_ratio: float) -> str:
     return "Very, very poor"
 
 def measure_tapped_density(
-    balance: Balance,
+    balance: BalanceInterface,
     *,
+    powder_dispenser: PowderDispenserInterface | None = None,
     disk_id: str | None = None,
     repeats: int | None = None,
     vib_level: int | None = None,
     vib_sec: float | None = None,
 ) -> tuple[float | None, float | None, list[float], bool]:
+    dispenser = powder_dispenser or _local_dispenser()
     settings = _tapped_density_settings()
     active_disk_id = disk_id or _material_settings()["disk_id"]
     volume = _load_disk_volume(active_disk_id)
@@ -230,22 +248,28 @@ def measure_tapped_density(
     # Large disk uses a fixed 5 repeats regardless of settings, because the hopper
     # volume is limited and cannot sustain the full configured repeat count.
     effective_repeats = 5 if large_disk else (settings["repeats"] if repeats is None else repeats)
-    run_all_motors(vib_level=2, duration_sec=3.0)
+    dispenser.run_all_motors(vib_level=2, duration_sec=3.0)
     for _ in range(max(1, int(effective_repeats))):
-        pack_powder(vib_level_value)
+        pack_powder(vib_level_value, powder_dispenser=dispenser)
         balance.tare()
-        _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
-        vib_with_aug(vib_level_value, 2.0)
+        _, consecutive_step_timeouts = _guarded_step(
+            consecutive_step_timeouts,
+            powder_dispenser=dispenser,
+        )
+        vib_with_aug(vib_level_value, 2.0, powder_dispenser=dispenser)
         mass = balance.read_weight()
         if mass < _noise_threshold_g():
-            if not clear_clogging(balance):
+            if not clear_clogging(balance, powder_dispenser=dispenser):
                 success = False
                 break
             # Flush one cycle after recovery before recording data.
-            pack_powder(vib_level_value)
+            pack_powder(vib_level_value, powder_dispenser=dispenser)
             balance.tare()
-            _, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
-            vib_with_aug(vib_level_value, 2.0)
+            _, consecutive_step_timeouts = _guarded_step(
+                consecutive_step_timeouts,
+                powder_dispenser=dispenser,
+            )
+            vib_with_aug(vib_level_value, 2.0, powder_dispenser=dispenser)
             mass = balance.read_weight()
             if mass < _noise_threshold_g():
                 success = False
@@ -263,28 +287,25 @@ def measure_tapped_density(
     return mean_density, stdev_density, densities, success
 
 
-def vib_with_aug(vib_level: int = 2, vib_seconds: float = 3.0) -> None:
+def vib_with_aug(
+    vib_level: int = 2,
+    vib_seconds: float = 3.0,
+    *,
+    powder_dispenser: PowderDispenserInterface | None = None,
+) -> None:
     """
     Run vibration (L2) and auger simultaneously to help clear a jam.
     """
-    vib_thread = threading.Thread(
-        target=vib,
-        args=(vib_level, vib_seconds),
-        daemon=True,
-    )
-    aug_thread = threading.Thread(
-        target=aug,
-        args=(vib_seconds,),
-        kwargs={"reverse": False},
-        daemon=True,
-    )
-    vib_thread.start()
-    aug_thread.start()
-    vib_thread.join()
-    aug_thread.join()
+    dispenser = powder_dispenser or _local_dispenser()
+    dispenser.vibrate_with_auger(vib_level, vib_seconds)
 
 
-def pack_powder(vib_level: int, half_rot_sec: float = 0.4) -> None:
+def pack_powder(
+    vib_level: int,
+    half_rot_sec: float = 0.4,
+    *,
+    powder_dispenser: PowderDispenserInterface | None = None,
+) -> None:
     """Compact powder into the disk cavity by oscillating the rotation motor
     forward and backward while running the vibration and auger motors throughout.
 
@@ -303,7 +324,7 @@ def pack_powder(vib_level: int, half_rot_sec: float = 0.4) -> None:
     total_time = half_rot_sec * 8 + (direction_switch_pause_sec * 2)
 
     # [TEMP TEST] aug + vib only (rotation motor disabled), fixed 5s
-    vib_with_aug(vib_level, 5.0)
+    vib_with_aug(vib_level, 5.0, powder_dispenser=powder_dispenser)
 
     # # Launch vibration and auger in parallel threads so they run for the full
     # # rotation sequence without blocking the main thread.
@@ -352,16 +373,18 @@ def pack_powder(vib_level: int, half_rot_sec: float = 0.4) -> None:
 
 
 def clear_clogging(
-    balance: Balance,
+    balance: BalanceInterface,
     *,
+    powder_dispenser: PowderDispenserInterface | None = None,
     vib_level: int = 4,
     vib_seconds: float = 3,
 ) -> bool:
+    dispenser = powder_dispenser or _local_dispenser()
     initial_mass = balance.read_weight()
     max_attempts = 3
     min_delta = _noise_threshold_g() * 10
     for _ in range(max_attempts):
-        run_all_motors(vib_level, vib_seconds)
+        dispenser.run_all_motors(vib_level, vib_seconds)
         mass = balance.read_weight()
         if mass >= initial_mass + float(min_delta):
             return True
@@ -374,6 +397,7 @@ def capture_and_analyze_repose(
     image_name: str = "raw_angle of repose.jpg",
     file_prefix: str = "",
     method: str = "direct_profile",
+    camera: CameraInterface | None = None,
 ) -> tuple[Path, dict[str, Any], float]:
     """
     Capture an image, analyze the angle of repose, and save outputs in output_dir.
@@ -382,7 +406,7 @@ def capture_and_analyze_repose(
     run_dir.mkdir(parents=True, exist_ok=True)
 
     image_path = run_dir / image_name
-    capture_powder_image(output_path=image_path)
+    (camera or _local_camera()).capture_powder_image(output_path=image_path)
 
     analysis_artifacts, mean_angle = analyze_repose(
         image_path,
@@ -403,13 +427,15 @@ def _load_disk_volume(disk_id: int | str) -> float:
     )
 
 def prime_p_dispenser(
-    balance: Balance,
+    balance: BalanceInterface,
     *,
+    powder_dispenser: PowderDispenserInterface | None = None,
     vib_level: int | None = None,
     vib_sec: float | None = None,
     max_cycles: int | None = None,
     min_delta: float | None = None,
 ) -> tuple[float, int]:
+    dispenser = powder_dispenser or _local_dispenser()
     vib_level_value = PRIME_DISPENSER_SETTINGS["vib_level"] if vib_level is None else vib_level
     vib_sec_value = PRIME_DISPENSER_SETTINGS["vib_sec"] if vib_sec is None else vib_sec
     max_cycles_value = (
@@ -420,21 +446,22 @@ def prime_p_dispenser(
     initial_mass = balance.read_weight()
     for cycle in range(1, max(1, int(max_cycles_value)) + 1):
         for _ in range(4):
-            vib_with_aug(vib_level_value, vib_sec_value)
-            step()
+            vib_with_aug(vib_level_value, vib_sec_value, powder_dispenser=dispenser)
+            dispenser.index_chamber()
         mass = balance.read_weight()
         if mass > initial_mass + float(min_delta_value):
             return balance.tare()
     raise RuntimeError("Mass did not increase before max_cycles reached.")
 
 def measure_series(
-    balance: Balance,
+    balance: BalanceInterface,
     *,
     level: int,
     vib_time: float,
     steps: int,
     noise_threshold_g: float | None = None,
-    vib_fn: Callable[[int, float], None] = vib,
+    vib_fn: Callable[[int, float], None] | None = None,
+    powder_dispenser: PowderDispenserInterface | None = None,
     skip_first: bool = False,
 ) -> Dict[str, Any]:
     """
@@ -442,9 +469,11 @@ def measure_series(
     If skip_first is True, the first measurement result is excluded from
     mean/std/success calculations (but still stored in the raw lists).
     """
+    dispenser = powder_dispenser or _local_dispenser()
+    vibration = vib_fn or dispenser.vibrate
     threshold = _noise_threshold_g() if noise_threshold_g is None else float(noise_threshold_g)
     # Pre-loop: vibrate once to clear any residual powder from the previous run, then tare.
-    vib_fn(level, vib_time)
+    vibration(level, vib_time)
     balance.tare()
     cumulative: List[float] = []
     per_step: List[float] = []
@@ -454,9 +483,12 @@ def measure_series(
     consecutive_step_timeouts = 0
 
     for i in range(max(1, int(steps))):
-        step_result, consecutive_step_timeouts = _guarded_step(consecutive_step_timeouts)
+        step_result, consecutive_step_timeouts = _guarded_step(
+            consecutive_step_timeouts,
+            powder_dispenser=dispenser,
+        )
         step_stop_reasons.append(str(step_result["stop_reason"]))
-        vib_fn(level, vib_time)
+        vibration(level, vib_time)
         mass = balance.read_weight()
         delta = mass - last_mass
         success = delta >= threshold
@@ -485,13 +517,14 @@ def measure_series(
 
 
 def explore_levels(
-    balance: Balance,
+    balance: BalanceInterface,
     *,
     vib_levels: List[int],
     vib_time: float,
     steps_per_level: int,
     noise_threshold_g: float | None = None,
-    vib_fn: Callable[[int, float], None] = vib,
+    vib_fn: Callable[[int, float], None] | None = None,
+    powder_dispenser: PowderDispenserInterface | None = None,
     skip_first: bool = False,
 ) -> List[Dict[str, Any]]:
     """
@@ -506,6 +539,7 @@ def explore_levels(
             steps=steps_per_level,
             noise_threshold_g=noise_threshold_g,
             vib_fn=vib_fn,
+            powder_dispenser=powder_dispenser,
             skip_first=skip_first,
         )
         results.append(res)
@@ -513,13 +547,14 @@ def explore_levels(
 
 
 def explore_times(
-    balance: Balance,
+    balance: BalanceInterface,
     *,
     level: int,
     vib_times: List[float],
     steps_per_time: int,
     noise_threshold_g: float | None = None,
-    vib_fn: Callable[[int, float], None] = vib,
+    vib_fn: Callable[[int, float], None] | None = None,
+    powder_dispenser: PowderDispenserInterface | None = None,
     skip_first: bool = False,
 ) -> List[Dict[str, Any]]:
 
@@ -532,6 +567,7 @@ def explore_times(
             steps=steps_per_time,
             noise_threshold_g=noise_threshold_g,
             vib_fn=vib_fn,
+            powder_dispenser=powder_dispenser,
             skip_first=skip_first,
         )
         results.append(res)
@@ -581,14 +617,15 @@ def select_optimal_series(results: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def run_calibration(
-    balance: Balance,
+    balance: BalanceInterface,
     *,
     vib_levels: List[int],
     vib_time_candidates: List[float],
     steps_per_level: int,
     stability_steps: int,
     noise_threshold_g: float | None = None,
-    vib_fn: Callable[[int, float], None] = vib,
+    vib_fn: Callable[[int, float], None] | None = None,
+    powder_dispenser: PowderDispenserInterface | None = None,
 ) -> Dict[str, Any]:
     """
     Run level exploration -> time exploration -> stability test and return results.
@@ -605,6 +642,7 @@ def run_calibration(
         steps_per_level=steps_per_level,
         noise_threshold_g=noise_threshold_g,
         vib_fn=vib_fn,
+        powder_dispenser=powder_dispenser,
     )
     optimal_level = select_optimal_series(level_results)
 
@@ -615,6 +653,7 @@ def run_calibration(
         steps_per_time=steps_per_level,
         noise_threshold_g=noise_threshold_g,
         vib_fn=vib_fn,
+        powder_dispenser=powder_dispenser,
     )
     best_time = select_optimal_series(time_results)
 
@@ -626,6 +665,7 @@ def run_calibration(
         steps=stability_steps,
         noise_threshold_g=noise_threshold_g,
         vib_fn=vib_fn,
+        powder_dispenser=powder_dispenser,
     )
 
     return {

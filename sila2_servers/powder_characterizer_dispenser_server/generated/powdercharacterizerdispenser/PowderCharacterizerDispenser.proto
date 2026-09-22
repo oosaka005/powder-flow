@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+import "SiLAFramework.proto";
+
+package sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1;
+
+/* Physical control of the Powder Characterizer dispenser. This feature exposes only the motor operations used by powder-flow. */
+service PowderCharacterizerDispenser {
+  /* Advance exactly one chamber using the IR sensor and existing timeout behavior. */
+  rpc IndexChamber (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.IndexChamber_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.IndexChamber_Responses) {}
+  /* Run M2 at the existing vibration level mapping for the requested duration. */
+  rpc Vibrate (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.Vibrate_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.Vibrate_Responses) {}
+  /* Run M2 and M3 together, preserving powder-flow's current forward auger direction. */
+  rpc VibrateWithAuger (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.VibrateWithAuger_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.VibrateWithAuger_Responses) {}
+  /* Run M1, M2, and M3 together for the requested duration and then perform one index step. */
+  rpc RunAllMotors (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.RunAllMotors_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.RunAllMotors_Responses) {}
+  /* Request immediate cancellation and stop every motor. */
+  rpc StopAll (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.StopAll_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.StopAll_Responses) {}
+  /* Stop all motors and release hardware resources. Intended for server shutdown and maintenance. */
+  rpc Close (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.Close_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.Close_Responses) {}
+  /* Device state: starting, discovering, waiting_for_device, ready, busy, recovering, or fault. */
+  rpc Get_Status (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.Get_Status_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.Get_Status_Responses) {}
+}
+
+/* Result of one indexed chamber movement. */
+message DataType_StepResult {
+  message StepResult_Struct {
+    sila2.org.silastandard.Boolean Success = 1;  /* Whether the IR transition completed before timeout. */
+    sila2.org.silastandard.String StopReason = 2;  /* sensor or timeout. */
+    sila2.org.silastandard.Real ElapsedSec = 3;  /* Measured step duration. */
+  }
+  sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.DataType_StepResult.StepResult_Struct StepResult = 1;  /* Result of one indexed chamber movement. */
+}
+
+/* Parameters for IndexChamber */
+message IndexChamber_Parameters {
+  sila2.org.silastandard.Integer Pwm = 1;  /* Rotation PWM from 0 through 255. */
+  sila2.org.silastandard.Real MaxSeconds = 2;  /* Existing index safety timeout. */
+  sila2.org.silastandard.Boolean Reverse = 3;  /* Reverse the rotation direction. */
+}
+
+/* Responses of IndexChamber */
+message IndexChamber_Responses {
+  sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.DataType_StepResult Result = 1;  /* Index result. */
+}
+
+/* Parameters for Vibrate */
+message Vibrate_Parameters {
+  sila2.org.silastandard.Integer Level = 1;  /* Vibration level. */
+  sila2.org.silastandard.Real DurationSec = 2;  /* Run duration. */
+}
+
+/* Responses of Vibrate */
+message Vibrate_Responses {
+}
+
+/* Parameters for VibrateWithAuger */
+message VibrateWithAuger_Parameters {
+  sila2.org.silastandard.Integer Level = 1;  /* Vibration level. */
+  sila2.org.silastandard.Real DurationSec = 2;  /* Run duration. */
+}
+
+/* Responses of VibrateWithAuger */
+message VibrateWithAuger_Responses {
+}
+
+/* Parameters for RunAllMotors */
+message RunAllMotors_Parameters {
+  sila2.org.silastandard.Integer Level = 1;  /* Vibration level. */
+  sila2.org.silastandard.Real DurationSec = 2;  /* Run duration. */
+}
+
+/* Responses of RunAllMotors */
+message RunAllMotors_Responses {
+  sila2.com.sekisui.powdercharacterizer.powdercharacterizerdispenser.v1.DataType_StepResult Result = 1;  /* Index result after the motor run. */
+}
+
+/* Parameters for StopAll */
+message StopAll_Parameters {
+}
+
+/* Responses of StopAll */
+message StopAll_Responses {
+}
+
+/* Parameters for Close */
+message Close_Parameters {
+}
+
+/* Responses of Close */
+message Close_Responses {
+}
+
+/* Parameters for Status */
+message Get_Status_Parameters {
+}
+
+/* Responses of Status */
+message Get_Status_Responses {
+  sila2.org.silastandard.String Status = 1;  /* Device state: starting, discovering, waiting_for_device, ready, busy, recovering, or fault. */
+}

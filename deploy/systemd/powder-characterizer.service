@@ -1,0 +1,16 @@
+[Unit]
+Description=Powder Characterizer SiLA2 Process Server
+After=network.target powder-characterizer-dispenser.service powder-characterizer-camera.service
+Wants=powder-characterizer-dispenser.service powder-characterizer-camera.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sdl-5/powder-flow
+EnvironmentFile=-/etc/powder-flow.env
+ExecStart=/home/sdl-5/powder-flow/.venv/bin/python -m sila2_servers.powder_characterizer_server --insecure
+Restart=on-failure
+RestartSec=2
+User=sdl-5
+
+[Install]
+WantedBy=powder-flow.target

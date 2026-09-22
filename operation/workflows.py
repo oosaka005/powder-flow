@@ -6,6 +6,12 @@ from pathlib import Path
 import tempfile
 from typing import Any, Callable
 
+from operation.device_interfaces import (
+    BalanceInterface,
+    CameraInterface,
+    PowderDispenserInterface,
+)
+
 
 @dataclass
 class FlowHooks:
@@ -121,9 +127,13 @@ def run_manual_experiment(
     use_aug: bool,
     hooks: FlowHooks | None = None,
     cancel_token: CancellationToken | None = None,
+    powder_dispenser: PowderDispenserInterface | None = None,
 ) -> dict[str, Any]:
-    from hardware_api.powder_dispenser.p_dispenser_HAT_api import cleanup_motors, step, vib
     from operation.powder_flow_api import vib_with_aug
+    from operation.local_devices import create_local_dispenser
+
+    owns_dispenser = powder_dispenser is None
+    dispenser = powder_dispenser or create_local_dispenser()
 
     is_step_only = int(vib_level) <= 0
     _log(
@@ -134,7 +144,14 @@ def run_manual_experiment(
     )
 
     try:
-        vib_runner = vib_with_aug if use_aug else vib
+        if use_aug:
+            vib_runner = lambda level, seconds: vib_with_aug(
+                level,
+                seconds,
+                powder_dispenser=dispenser,
+            )
+        else:
+            vib_runner = dispenser.vibrate
         requested_steps = max(0, int(dose_count))
         succeeded_steps = 0
 
@@ -148,7 +165,7 @@ def run_manual_experiment(
                 if not is_step_only:
                     vib_runner(vib_level, vib_seconds)
                 _ensure_not_cancelled(cancel_token)
-                if not bool(step()["success"]):
+                if not bool(dispenser.index_chamber()["success"]):
                     break
                 succeeded_steps += 1
 
@@ -160,28 +177,38 @@ def run_manual_experiment(
             "use_aug": use_aug,
         }
     finally:
-        cleanup_motors()
+        if owns_dispenser:
+            dispenser.close()
+        else:
+            dispenser.stop_all()
 
 
 def run_clog_clear(
     *,
     hooks: FlowHooks | None = None,
     cancel_token: CancellationToken | None = None,
+    powder_dispenser: PowderDispenserInterface | None = None,
 ) -> dict[str, Any]:
-    from hardware_api.powder_dispenser.p_dispenser_HAT_api import cleanup_motors, run_all_motors
+    from operation.local_devices import create_local_dispenser
+
+    owns_dispenser = powder_dispenser is None
+    dispenser = powder_dispenser or create_local_dispenser()
 
     _log(hooks, "Clog clear started: vib_level=4, duration_sec=2.0")
     _ensure_not_cancelled(cancel_token)
 
     try:
-        step_result = run_all_motors(vib_level=4, duration_sec=2.0)
+        step_result = dispenser.run_all_motors(vib_level=4, duration_sec=2.0)
         return {
             "vib_level": 4,
             "duration_sec": 2.0,
             "step_success": bool(step_result["success"]),
         }
     finally:
-        cleanup_motors()
+        if owns_dispenser:
+            dispenser.close()
+        else:
+            dispenser.stop_all()
 
 
 def run_manual_camera_preview(
@@ -190,8 +217,11 @@ def run_manual_camera_preview(
     lens_position: float | None,
     hooks: FlowHooks | None = None,
     cancel_token: CancellationToken | None = None,
+    camera: CameraInterface | None = None,
 ) -> dict[str, Any]:
-    from hardware_api.camera.camera_api import capture_image
+    from operation.local_devices import create_local_camera
+
+    camera_device = camera or create_local_camera()
 
     _log_stage(hooks, f"Camera: capturing preview image (focus={focus_mode})")
     _ensure_not_cancelled(cancel_token)
@@ -201,7 +231,7 @@ def run_manual_camera_preview(
         with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
             tmp_path = Path(tmp.name)
 
-        capture_image(
+        camera_device.capture_image(
             tmp_path,
             rotation=180,
             autofocus_mode=focus_mode,
@@ -233,11 +263,14 @@ def run_capture_repose_preview(
     *,
     hooks: FlowHooks | None = None,
     cancel_token: CancellationToken | None = None,
+    camera: CameraInterface | None = None,
 ) -> dict[str, Any]:
     """Capture an image with repose settings and return the cropped image for preview."""
-    from hardware_api.camera.camera_api import capture_powder_image
     from operation.repose_analysis import _preprocess_repose
+    from operation.local_devices import create_local_camera
     import cv2
+
+    camera_device = camera or create_local_camera()
 
     _log_stage(hooks, "Camera: capturing repose preview image")
     _ensure_not_cancelled(cancel_token)
@@ -247,7 +280,7 @@ def run_capture_repose_preview(
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
             tmp_path = Path(tmp.name)
 
-        capture_powder_image(output_path=tmp_path)
+        camera_device.capture_powder_image(output_path=tmp_path)
         _ensure_not_cancelled(cancel_token)
 
         arr = cv2.imread(str(tmp_path), cv2.IMREAD_UNCHANGED)
@@ -279,12 +312,18 @@ def run_automated_experiment(
     *,
     hooks: FlowHooks | None = None,
     cancel_token: CancellationToken | None = None,
+    powder_dispenser: PowderDispenserInterface | None = None,
+    balance: BalanceInterface | None = None,
+    camera: CameraInterface | None = None,
 ) -> dict[str, Any]:
-    from hardware_api.balance.balance_api import Balance
-    from hardware_api.powder_dispenser.p_dispenser_HAT_api import cleanup_motors
     from operation.powder_flow_api import (
         classify_hausner,
         prime_p_dispenser,
+    )
+    from operation.local_devices import (
+        create_local_balance,
+        create_local_camera,
+        create_local_dispenser,
     )
     from service.settings_store import load_settings
 
@@ -310,7 +349,10 @@ def run_automated_experiment(
     run_id = f"{timestamp}_{material_name}"
     artifacts: dict[str, Any] = {}
 
-    balance = Balance()
+    owns_dispenser = powder_dispenser is None
+    dispenser = powder_dispenser or create_local_dispenser()
+    balance_device = balance or create_local_balance()
+    camera_device = camera or create_local_camera()
     try:
         _log_stage(hooks, "Starting automated experiment")
 
@@ -318,7 +360,7 @@ def run_automated_experiment(
         try:
             _log_stage(hooks, "Calibration: priming dispenser")
             try:
-                prime_p_dispenser(balance)
+                prime_p_dispenser(balance_device, powder_dispenser=dispenser)
             except FlowAbortedError:
                 raise
             except Exception as exc:
@@ -326,7 +368,8 @@ def run_automated_experiment(
             _log(hooks, "Priming completed")
 
             calibration_result = _run_calibration(
-                balance=balance,
+                balance=balance_device,
+                powder_dispenser=dispenser,
                 material_name=material_name,
                 timestamp=timestamp,
                 vib_levels=vib_levels,
@@ -355,7 +398,8 @@ def run_automated_experiment(
             raise
 
         bulk_density_result = _run_bulk_density(
-            balance=balance,
+            balance=balance_device,
+            powder_dispenser=dispenser,
             material_name=material_name,
             timestamp=timestamp,
             disk_id=disk_id,
@@ -374,6 +418,7 @@ def run_automated_experiment(
         bulk_success = bool(bulk_density_data["success"])
 
         repose_result = _run_repose(
+            camera=camera_device,
             material_name=material_name,
             timestamp=timestamp,
             date_prefix=date_prefix,
@@ -385,7 +430,8 @@ def run_automated_experiment(
         mean_angle = repose_data["angle_deg"]
 
         tapped_density_result = _run_tapped_density(
-            balance=balance,
+            balance=balance_device,
+            powder_dispenser=dispenser,
             material_name=material_name,
             timestamp=timestamp,
             disk_id=disk_id,
@@ -418,8 +464,11 @@ def run_automated_experiment(
             f"class={hausner_class if hausner_class is not None else 'n/a'}",
         )
     finally:
-        balance.disconnect()
-        cleanup_motors()
+        balance_device.disconnect()
+        if owns_dispenser:
+            dispenser.close()
+        else:
+            dispenser.stop_all()
 
     result_data = {
         "metadata": {
@@ -455,9 +504,15 @@ def run_single_test(
     stage: str,
     hooks: FlowHooks | None = None,
     cancel_token: CancellationToken | None = None,
+    powder_dispenser: PowderDispenserInterface | None = None,
+    balance: BalanceInterface | None = None,
+    camera: CameraInterface | None = None,
 ) -> dict[str, Any]:
-    from hardware_api.balance.balance_api import Balance
-    from hardware_api.powder_dispenser.p_dispenser_HAT_api import cleanup_motors
+    from operation.local_devices import (
+        create_local_balance,
+        create_local_camera,
+        create_local_dispenser,
+    )
     from service.settings_store import load_settings
 
     settings = load_settings()
@@ -482,18 +537,22 @@ def run_single_test(
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     date_prefix = f"{timestamp[:8]}_"
     artifacts: dict[str, Any] = {}
-    balance: Any | None = None
+    owns_dispenser = powder_dispenser is None
+    dispenser = powder_dispenser or create_local_dispenser()
+    balance_device: BalanceInterface | None = balance
+    camera_device = camera or create_local_camera()
 
     _ensure_not_cancelled(cancel_token)
     _log_stage(hooks, f"Starting single test: {stage_key}")
 
     try:
         if stage_key in {"calibration", "bulk_density", "tapped_density"}:
-            balance = Balance()
+            balance_device = balance_device or create_local_balance()
 
         if stage_key == "calibration":
             stage_result = _run_calibration(
-                balance=balance,
+                balance=balance_device,
+                powder_dispenser=dispenser,
                 material_name=material_name,
                 timestamp=timestamp,
                 vib_levels=vib_levels,
@@ -508,7 +567,8 @@ def run_single_test(
             result_key = "calibration"
         elif stage_key == "bulk_density":
             stage_result = _run_bulk_density(
-                balance=balance,
+                balance=balance_device,
+                powder_dispenser=dispenser,
                 material_name=material_name,
                 timestamp=timestamp,
                 disk_id=disk_id,
@@ -518,6 +578,7 @@ def run_single_test(
             result_key = "bulk_density"
         elif stage_key == "angle_of_repose":
             stage_result = _run_repose(
+                camera=camera_device,
                 material_name=material_name,
                 timestamp=timestamp,
                 date_prefix=date_prefix,
@@ -527,7 +588,8 @@ def run_single_test(
             result_key = "angle_of_repose"
         elif stage_key == "tapped_density":
             stage_result = _run_tapped_density(
-                balance=balance,
+                balance=balance_device,
+                powder_dispenser=dispenser,
                 material_name=material_name,
                 timestamp=timestamp,
                 disk_id=disk_id,
@@ -546,9 +608,12 @@ def run_single_test(
             label = "Bulk density" if stage_key == "bulk_density" else "Tapped density"
             _validate_density_against_stability(stage_data, stability_density, label, hooks)
     finally:
-        if balance is not None:
-            balance.disconnect()
-        cleanup_motors()
+        if balance_device is not None:
+            balance_device.disconnect()
+        if owns_dispenser:
+            dispenser.close()
+        else:
+            dispenser.stop_all()
 
     return {
         "metadata": {
@@ -567,7 +632,8 @@ def run_single_test(
 
 def _run_calibration(
     *,
-    balance: Any,
+    balance: BalanceInterface,
+    powder_dispenser: PowderDispenserInterface,
     material_name: str,
     timestamp: str,
     vib_levels: list[int],
@@ -592,6 +658,11 @@ def _run_calibration(
     _ensure_not_cancelled(cancel_token)
     _log_stage(hooks, "Calibration: optimizing vibration conditions (level and time)")
     try:
+        vibration = lambda level, seconds: vib_with_aug(
+            level,
+            seconds,
+            powder_dispenser=powder_dispenser,
+        )
         disk_number = int(disk_id.lstrip("Dd"))
         large_disk = disk_number >= 7
         vib_time = vib_time_candidates[0]
@@ -600,7 +671,8 @@ def _run_calibration(
             vib_levels=vib_levels,
             vib_time=vib_time,
             steps_per_level=steps_per_level,
-            vib_fn=vib_with_aug,
+            vib_fn=vibration,
+            powder_dispenser=powder_dispenser,
             skip_first=large_disk,
         )
         has_level_success = any(res["success_all"] for res in level_results)
@@ -616,7 +688,8 @@ def _run_calibration(
                 level=optimal_level["level"],
                 vib_times=vib_time_candidates,
                 steps_per_time=steps_per_level,
-                vib_fn=vib_with_aug,
+                vib_fn=vibration,
+                powder_dispenser=powder_dispenser,
                 skip_first=large_disk,
             )
             has_time_success = any(res["success_all"] for res in time_results)
@@ -645,7 +718,8 @@ def _run_calibration(
             level=optimal_level["level"],
             vib_time=vib_time,
             steps=stability_steps,
-            vib_fn=vib_with_aug,
+            vib_fn=vibration,
+            powder_dispenser=powder_dispenser,
             skip_first=large_disk,
         )
         stability_results.append(stability_result)
@@ -660,7 +734,8 @@ def _run_calibration(
                     level=level,
                     vib_time=vib_time,
                     steps=stability_steps,
-                    vib_fn=vib_with_aug,
+                    vib_fn=vibration,
+                    powder_dispenser=powder_dispenser,
                     skip_first=large_disk,
                 )
                 stability_results.append(retry_result)
@@ -740,7 +815,8 @@ def _run_calibration(
 
 def _run_bulk_density(
     *,
-    balance: Any,
+    balance: BalanceInterface,
+    powder_dispenser: PowderDispenserInterface,
     material_name: str,
     timestamp: str,
     disk_id: str,
@@ -754,6 +830,7 @@ def _run_bulk_density(
     try:
         mean_bulk, stdev_bulk, bulk_densities, bulk_success = measure_bulk_density(
             balance,
+            powder_dispenser=powder_dispenser,
             disk_id=disk_id,
             on_log=hooks.on_log if hooks else None,
         )
@@ -790,6 +867,7 @@ def _run_bulk_density(
 
 def _run_repose(
     *,
+    camera: CameraInterface,
     material_name: str,
     timestamp: str,
     date_prefix: str,
@@ -797,7 +875,6 @@ def _run_repose(
     cancel_token: CancellationToken | None = None,
 ) -> dict[str, Any]:
     from operation.powder_flow_api import capture_and_analyze_repose, classify_repose
-    from hardware_api.camera.camera_api import capture_powder_image
 
     _ensure_not_cancelled(cancel_token)
     _log_stage(hooks, "Flowability: measuring angle of repose")
@@ -815,6 +892,7 @@ def _run_repose(
                     output_dir=repose_dir,
                     image_name=image_name,
                     file_prefix=date_prefix,
+                    camera=camera,
                 )
                 artifacts["repose_raw_image"] = _artifact_entry(image_path)
                 for artifact_key, image in analysis_artifacts.items():
@@ -892,7 +970,8 @@ def _run_repose(
 
 def _run_tapped_density(
     *,
-    balance: Any,
+    balance: BalanceInterface,
+    powder_dispenser: PowderDispenserInterface,
     material_name: str,
     timestamp: str,
     disk_id: str,
@@ -906,6 +985,7 @@ def _run_tapped_density(
     try:
         mean_tapped, stdev_tapped, tapped_densities, tapped_success = measure_tapped_density(
             balance,
+            powder_dispenser=powder_dispenser,
             disk_id=disk_id,
         )
     except FlowAbortedError:

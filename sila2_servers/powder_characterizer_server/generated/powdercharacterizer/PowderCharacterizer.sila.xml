@@ -1,0 +1,404 @@
+<Feature xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Category="powdercharacterizer" FeatureVersion="1.0" Originator="com.sekisui" SiLA2Version="1.0" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+  <Identifier>PowderCharacterizer</Identifier>
+  <DisplayName>Powder Characterizer</DisplayName>
+  <Description>Application-level Powder Characterizer operations backed exclusively by first-layer SiLA 2 devices.</Description>
+  <Property>
+    <Identifier>CurrentRun</Identifier>
+    <DisplayName>Current Run</DisplayName>
+    <Description>JSON snapshot containing state, stage, progress, elapsed time, logs, final result, and error.</Description>
+    <Observable>No</Observable>
+    <DataType>
+      <Basic>String</Basic>
+    </DataType>
+  </Property>
+  <Command>
+    <Identifier>RunAutomatedExperiment</Identifier>
+    <DisplayName>Run Automated Experiment</DisplayName>
+    <Description>Run the unchanged complete powder-flow workflow.</Description>
+    <Observable>Yes</Observable>
+    <Response>
+      <Identifier>ResultJson</Identifier>
+      <DisplayName>Result JSON</DisplayName>
+      <Description>Final result and artifact metadata.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <IntermediateResponse>
+      <Identifier>UpdateJson</Identifier>
+      <DisplayName>Update JSON</DisplayName>
+      <Description>Current execution snapshot.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </IntermediateResponse>
+  </Command>
+  <Command>
+    <Identifier>RunCalibration</Identifier>
+    <DisplayName>Run Calibration</DisplayName>
+    <Description>Run only calibration using current settings.</Description>
+    <Observable>Yes</Observable>
+    <Response>
+      <Identifier>ResultJson</Identifier>
+      <DisplayName>Result JSON</DisplayName>
+      <Description>Final result and artifact metadata.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <IntermediateResponse>
+      <Identifier>UpdateJson</Identifier>
+      <DisplayName>Update JSON</DisplayName>
+      <Description>Current execution snapshot.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </IntermediateResponse>
+  </Command>
+  <Command>
+    <Identifier>RunBulkDensity</Identifier>
+    <DisplayName>Run Bulk Density</DisplayName>
+    <Description>Run only bulk density using current settings.</Description>
+    <Observable>Yes</Observable>
+    <Response>
+      <Identifier>ResultJson</Identifier>
+      <DisplayName>Result JSON</DisplayName>
+      <Description>Final result and artifact metadata.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <IntermediateResponse>
+      <Identifier>UpdateJson</Identifier>
+      <DisplayName>Update JSON</DisplayName>
+      <Description>Current execution snapshot.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </IntermediateResponse>
+  </Command>
+  <Command>
+    <Identifier>RunTappedDensity</Identifier>
+    <DisplayName>Run Tapped Density</DisplayName>
+    <Description>Run only tapped density using current settings.</Description>
+    <Observable>Yes</Observable>
+    <Response>
+      <Identifier>ResultJson</Identifier>
+      <DisplayName>Result JSON</DisplayName>
+      <Description>Final result and artifact metadata.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <IntermediateResponse>
+      <Identifier>UpdateJson</Identifier>
+      <DisplayName>Update JSON</DisplayName>
+      <Description>Current execution snapshot.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </IntermediateResponse>
+  </Command>
+  <Command>
+    <Identifier>RunAngleOfRepose</Identifier>
+    <DisplayName>Run Angle Of Repose</DisplayName>
+    <Description>Run only angle of repose using current settings.</Description>
+    <Observable>Yes</Observable>
+    <Response>
+      <Identifier>ResultJson</Identifier>
+      <DisplayName>Result JSON</DisplayName>
+      <Description>Final result and artifact metadata.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <IntermediateResponse>
+      <Identifier>UpdateJson</Identifier>
+      <DisplayName>Update JSON</DisplayName>
+      <Description>Current execution snapshot.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </IntermediateResponse>
+  </Command>
+  <Command>
+    <Identifier>RunSingleTest</Identifier>
+    <DisplayName>Run Single Test</DisplayName>
+    <Description>Run a named existing single-test stage.</Description>
+    <Observable>Yes</Observable>
+    <Parameter>
+      <Identifier>Stage</Identifier>
+      <DisplayName>Stage</DisplayName>
+      <Description>calibration, bulk_density, tapped_density, or angle_of_repose.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Parameter>
+    <Response>
+      <Identifier>ResultJson</Identifier>
+      <DisplayName>Result JSON</DisplayName>
+      <Description>Final result and artifact metadata.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <IntermediateResponse>
+      <Identifier>UpdateJson</Identifier>
+      <DisplayName>Update JSON</DisplayName>
+      <Description>Current execution snapshot.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </IntermediateResponse>
+  </Command>
+  <Command>
+    <Identifier>RunManualExperiment</Identifier>
+    <DisplayName>Run Manual Experiment</DisplayName>
+    <Description>Run current Manual Dispense behavior.</Description>
+    <Observable>Yes</Observable>
+    <Parameter>
+      <Identifier>VibrationLevel</Identifier>
+      <DisplayName>Vibration Level</DisplayName>
+      <Description>Current manual vibration setting.</Description>
+      <DataType>
+        <Basic>Integer</Basic>
+      </DataType>
+    </Parameter>
+    <Parameter>
+      <Identifier>VibrationSeconds</Identifier>
+      <DisplayName>Vibration Seconds</DisplayName>
+      <Description>Current manual duration.</Description>
+      <DataType>
+        <Basic>Real</Basic>
+      </DataType>
+    </Parameter>
+    <Parameter>
+      <Identifier>DoseCount</Identifier>
+      <DisplayName>Dose Count</DisplayName>
+      <Description>Requested chamber count.</Description>
+      <DataType>
+        <Basic>Integer</Basic>
+      </DataType>
+    </Parameter>
+    <Parameter>
+      <Identifier>UseAuger</Identifier>
+      <DisplayName>Use Auger</DisplayName>
+      <Description>Whether M3 runs with vibration.</Description>
+      <DataType>
+        <Basic>Boolean</Basic>
+      </DataType>
+    </Parameter>
+    <Response>
+      <Identifier>ResultJson</Identifier>
+      <DisplayName>Result JSON</DisplayName>
+      <Description>Manual operation result.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <IntermediateResponse>
+      <Identifier>UpdateJson</Identifier>
+      <DisplayName>Update JSON</DisplayName>
+      <Description>Current execution snapshot.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </IntermediateResponse>
+  </Command>
+  <Command>
+    <Identifier>ClearClog</Identifier>
+    <DisplayName>Clear Clog</DisplayName>
+    <Description>Run the existing fixed clog-clear operation through the dispenser server.</Description>
+    <Observable>No</Observable>
+    <Response>
+      <Identifier>ResultJson</Identifier>
+      <DisplayName>Result JSON</DisplayName>
+      <Description>Clog-clear result.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+  </Command>
+  <Command>
+    <Identifier>CaptureCameraPreview</Identifier>
+    <DisplayName>Capture Camera Preview</DisplayName>
+    <Description>Capture a camera preview through the camera server.</Description>
+    <Observable>No</Observable>
+    <Parameter>
+      <Identifier>FocusMode</Identifier>
+      <DisplayName>Focus Mode</DisplayName>
+      <Description>Current preview focus mode.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Parameter>
+    <Parameter>
+      <Identifier>LensPosition</Identifier>
+      <DisplayName>Lens Position</DisplayName>
+      <Description>Current manual lens position.</Description>
+      <DataType>
+        <Basic>Real</Basic>
+      </DataType>
+    </Parameter>
+    <Response>
+      <Identifier>ImageData</Identifier>
+      <DisplayName>Image Data</DisplayName>
+      <Description>Unchanged image bytes.</Description>
+      <DataType>
+        <Basic>Binary</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>MediaType</Identifier>
+      <DisplayName>Media Type</DisplayName>
+      <Description>HTTP media type.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>Filename</Identifier>
+      <DisplayName>Filename</DisplayName>
+      <Description>Filename.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+  </Command>
+  <Command>
+    <Identifier>CaptureReposePreview</Identifier>
+    <DisplayName>Capture Repose Preview</DisplayName>
+    <Description>Capture and crop the existing repose preview.</Description>
+    <Observable>No</Observable>
+    <Response>
+      <Identifier>ImageData</Identifier>
+      <DisplayName>Image Data</DisplayName>
+      <Description>PNG bytes.</Description>
+      <DataType>
+        <Basic>Binary</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>MediaType</Identifier>
+      <DisplayName>Media Type</DisplayName>
+      <Description>HTTP media type.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>Filename</Identifier>
+      <DisplayName>Filename</DisplayName>
+      <Description>Filename.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+  </Command>
+  <Command>
+    <Identifier>AbortCurrentOperation</Identifier>
+    <DisplayName>Abort Current Operation</DisplayName>
+    <Description>Cancel the current workflow and propagate StopAll to the first-layer dispenser.</Description>
+    <Observable>No</Observable>
+  </Command>
+  <Command>
+    <Identifier>SaveResults</Identifier>
+    <DisplayName>Save Results</DisplayName>
+    <Description>Save the pending result with the existing result_store format.</Description>
+    <Observable>No</Observable>
+    <Parameter>
+      <Identifier>UpdateMaterialDatabase</Identifier>
+      <DisplayName>Update Material Database</DisplayName>
+      <Description>Preserve the existing save-time choice to update Material DB.</Description>
+      <DataType>
+        <Basic>Boolean</Basic>
+      </DataType>
+    </Parameter>
+  </Command>
+  <Command>
+    <Identifier>DiscardResults</Identifier>
+    <DisplayName>Discard Results</DisplayName>
+    <Description>Discard the pending result with the existing result_store behavior.</Description>
+    <Observable>No</Observable>
+  </Command>
+  <Command>
+    <Identifier>GetSettings</Identifier>
+    <DisplayName>Get Settings</DisplayName>
+    <Description>Return the unchanged app_settings JSON structure.</Description>
+    <Observable>No</Observable>
+    <Response>
+      <Identifier>SettingsJson</Identifier>
+      <DisplayName>Settings JSON</DisplayName>
+      <Description>Settings JSON.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+  </Command>
+  <Command>
+    <Identifier>UpdateSettings</Identifier>
+    <DisplayName>Update Settings</DisplayName>
+    <Description>Validate and persist the unchanged app_settings JSON structure.</Description>
+    <Observable>No</Observable>
+    <Parameter>
+      <Identifier>SettingsJson</Identifier>
+      <DisplayName>Settings JSON</DisplayName>
+      <Description>Complete settings JSON.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Parameter>
+  </Command>
+  <Command>
+    <Identifier>GetMaterialDatabase</Identifier>
+    <DisplayName>Get Material Database</DisplayName>
+    <Description>Return the existing material database JSON.</Description>
+    <Observable>No</Observable>
+    <Response>
+      <Identifier>DatabaseJson</Identifier>
+      <DisplayName>Database JSON</DisplayName>
+      <Description>Material database JSON.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+  </Command>
+  <Command>
+    <Identifier>GetArtifact</Identifier>
+    <DisplayName>Get Artifact</DisplayName>
+    <Description>Return a pending or saved run artifact through the second layer.</Description>
+    <Observable>No</Observable>
+    <Parameter>
+      <Identifier>RunId</Identifier>
+      <DisplayName>Run ID</DisplayName>
+      <Description>Existing run identifier.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Parameter>
+    <Parameter>
+      <Identifier>Filename</Identifier>
+      <DisplayName>Filename</DisplayName>
+      <Description>Artifact filename.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Parameter>
+    <Response>
+      <Identifier>ArtifactData</Identifier>
+      <DisplayName>Artifact Data</DisplayName>
+      <Description>Artifact bytes.</Description>
+      <DataType>
+        <Basic>Binary</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>MediaType</Identifier>
+      <DisplayName>Media Type</DisplayName>
+      <Description>HTTP media type.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+  </Command>
+</Feature>

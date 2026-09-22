@@ -1,0 +1,130 @@
+<Feature xmlns="http://www.sila-standard.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Category="powdercharacterizer" FeatureVersion="1.0" Originator="com.sekisui" SiLA2Version="1.0" xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+  <Identifier>PowderCharacterizerCamera</Identifier>
+  <DisplayName>Powder Characterizer Camera</DisplayName>
+  <Description>Capture unchanged image bytes from the Powder Characterizer camera.</Description>
+  <Property>
+    <Identifier>Status</Identifier>
+    <DisplayName>Status</DisplayName>
+    <Description>Camera server state.</Description>
+    <Observable>No</Observable>
+    <DataType>
+      <Basic>String</Basic>
+    </DataType>
+  </Property>
+  <Command>
+    <Identifier>Capture</Identifier>
+    <DisplayName>Capture</DisplayName>
+    <Description>Capture a preview using the requested focus and rotation values.</Description>
+    <Observable>No</Observable>
+    <Parameter>
+      <Identifier>Rotation</Identifier>
+      <DisplayName>Rotation</DisplayName>
+      <Description>Rotation in degrees.</Description>
+      <DataType>
+        <Basic>Integer</Basic>
+      </DataType>
+    </Parameter>
+    <Parameter>
+      <Identifier>AutofocusMode</Identifier>
+      <DisplayName>Autofocus Mode</DisplayName>
+      <Description>rpicam autofocus mode.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Parameter>
+    <Parameter>
+      <Identifier>LensPosition</Identifier>
+      <DisplayName>Lens Position</DisplayName>
+      <Description>Manual lens position; ignored unless mode is manual.</Description>
+      <DataType>
+        <Basic>Real</Basic>
+      </DataType>
+    </Parameter>
+    <Response>
+      <Identifier>ImageData</Identifier>
+      <DisplayName>Image Data</DisplayName>
+      <Description>Original JPEG bytes.</Description>
+      <DataType>
+        <Basic>Binary</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>MediaType</Identifier>
+      <DisplayName>Media Type</DisplayName>
+      <Description>HTTP media type.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>Filename</Identifier>
+      <DisplayName>Filename</DisplayName>
+      <Description>Suggested filename.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>Width</Identifier>
+      <DisplayName>Width</DisplayName>
+      <Description>Pixel width.</Description>
+      <DataType>
+        <Basic>Integer</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>Height</Identifier>
+      <DisplayName>Height</DisplayName>
+      <Description>Pixel height.</Description>
+      <DataType>
+        <Basic>Integer</Basic>
+      </DataType>
+    </Response>
+  </Command>
+  <Command>
+    <Identifier>CaptureRepose</Identifier>
+    <DisplayName>Capture Repose</DisplayName>
+    <Description>Capture a PNG with the existing angle-of-repose camera settings.</Description>
+    <Observable>No</Observable>
+    <Response>
+      <Identifier>ImageData</Identifier>
+      <DisplayName>Image Data</DisplayName>
+      <Description>Original PNG bytes.</Description>
+      <DataType>
+        <Basic>Binary</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>MediaType</Identifier>
+      <DisplayName>Media Type</DisplayName>
+      <Description>HTTP media type.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>Filename</Identifier>
+      <DisplayName>Filename</DisplayName>
+      <Description>Suggested filename.</Description>
+      <DataType>
+        <Basic>String</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>Width</Identifier>
+      <DisplayName>Width</DisplayName>
+      <Description>Pixel width.</Description>
+      <DataType>
+        <Basic>Integer</Basic>
+      </DataType>
+    </Response>
+    <Response>
+      <Identifier>Height</Identifier>
+      <DisplayName>Height</DisplayName>
+      <Description>Pixel height.</Description>
+      <DataType>
+        <Basic>Integer</Basic>
+      </DataType>
+    </Response>
+  </Command>
+</Feature>

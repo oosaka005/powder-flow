@@ -1,0 +1,16 @@
+[Unit]
+Description=Powder Characterizer Web UI Gateway
+After=network.target powder-characterizer.service
+Wants=powder-characterizer.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sdl-5/powder-flow
+EnvironmentFile=-/etc/powder-flow.env
+ExecStart=/home/sdl-5/powder-flow/.venv/bin/python -m web_ui_gateway
+Restart=on-failure
+RestartSec=2
+User=sdl-5
+
+[Install]
+WantedBy=powder-flow.target

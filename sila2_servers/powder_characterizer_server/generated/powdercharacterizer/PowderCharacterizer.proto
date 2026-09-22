@@ -1,0 +1,296 @@
+syntax = "proto3";
+
+import "SiLAFramework.proto";
+
+package sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1;
+
+/* Application-level Powder Characterizer operations backed exclusively by first-layer SiLA 2 devices. */
+service PowderCharacterizer {
+  /* Run the unchanged complete powder-flow workflow. */
+  rpc RunAutomatedExperiment (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunAutomatedExperiment_Parameters) returns (sila2.org.silastandard.CommandConfirmation) {}
+  /* Monitor the state of RunAutomatedExperiment */
+  rpc RunAutomatedExperiment_Info (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.org.silastandard.ExecutionInfo) {}
+  /* Retrieve intermediate responses of RunAutomatedExperiment */
+  rpc RunAutomatedExperiment_Intermediate (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunAutomatedExperiment_IntermediateResponses) {}
+  /* Retrieve result of RunAutomatedExperiment */
+  rpc RunAutomatedExperiment_Result(sila2.org.silastandard.CommandExecutionUUID) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunAutomatedExperiment_Responses) {}
+  /* Run only calibration using current settings. */
+  rpc RunCalibration (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunCalibration_Parameters) returns (sila2.org.silastandard.CommandConfirmation) {}
+  /* Monitor the state of RunCalibration */
+  rpc RunCalibration_Info (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.org.silastandard.ExecutionInfo) {}
+  /* Retrieve intermediate responses of RunCalibration */
+  rpc RunCalibration_Intermediate (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunCalibration_IntermediateResponses) {}
+  /* Retrieve result of RunCalibration */
+  rpc RunCalibration_Result(sila2.org.silastandard.CommandExecutionUUID) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunCalibration_Responses) {}
+  /* Run only bulk density using current settings. */
+  rpc RunBulkDensity (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunBulkDensity_Parameters) returns (sila2.org.silastandard.CommandConfirmation) {}
+  /* Monitor the state of RunBulkDensity */
+  rpc RunBulkDensity_Info (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.org.silastandard.ExecutionInfo) {}
+  /* Retrieve intermediate responses of RunBulkDensity */
+  rpc RunBulkDensity_Intermediate (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunBulkDensity_IntermediateResponses) {}
+  /* Retrieve result of RunBulkDensity */
+  rpc RunBulkDensity_Result(sila2.org.silastandard.CommandExecutionUUID) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunBulkDensity_Responses) {}
+  /* Run only tapped density using current settings. */
+  rpc RunTappedDensity (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunTappedDensity_Parameters) returns (sila2.org.silastandard.CommandConfirmation) {}
+  /* Monitor the state of RunTappedDensity */
+  rpc RunTappedDensity_Info (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.org.silastandard.ExecutionInfo) {}
+  /* Retrieve intermediate responses of RunTappedDensity */
+  rpc RunTappedDensity_Intermediate (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunTappedDensity_IntermediateResponses) {}
+  /* Retrieve result of RunTappedDensity */
+  rpc RunTappedDensity_Result(sila2.org.silastandard.CommandExecutionUUID) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunTappedDensity_Responses) {}
+  /* Run only angle of repose using current settings. */
+  rpc RunAngleOfRepose (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunAngleOfRepose_Parameters) returns (sila2.org.silastandard.CommandConfirmation) {}
+  /* Monitor the state of RunAngleOfRepose */
+  rpc RunAngleOfRepose_Info (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.org.silastandard.ExecutionInfo) {}
+  /* Retrieve intermediate responses of RunAngleOfRepose */
+  rpc RunAngleOfRepose_Intermediate (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunAngleOfRepose_IntermediateResponses) {}
+  /* Retrieve result of RunAngleOfRepose */
+  rpc RunAngleOfRepose_Result(sila2.org.silastandard.CommandExecutionUUID) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunAngleOfRepose_Responses) {}
+  /* Run a named existing single-test stage. */
+  rpc RunSingleTest (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunSingleTest_Parameters) returns (sila2.org.silastandard.CommandConfirmation) {}
+  /* Monitor the state of RunSingleTest */
+  rpc RunSingleTest_Info (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.org.silastandard.ExecutionInfo) {}
+  /* Retrieve intermediate responses of RunSingleTest */
+  rpc RunSingleTest_Intermediate (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunSingleTest_IntermediateResponses) {}
+  /* Retrieve result of RunSingleTest */
+  rpc RunSingleTest_Result(sila2.org.silastandard.CommandExecutionUUID) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunSingleTest_Responses) {}
+  /* Run current Manual Dispense behavior. */
+  rpc RunManualExperiment (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunManualExperiment_Parameters) returns (sila2.org.silastandard.CommandConfirmation) {}
+  /* Monitor the state of RunManualExperiment */
+  rpc RunManualExperiment_Info (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.org.silastandard.ExecutionInfo) {}
+  /* Retrieve intermediate responses of RunManualExperiment */
+  rpc RunManualExperiment_Intermediate (sila2.org.silastandard.CommandExecutionUUID) returns (stream sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunManualExperiment_IntermediateResponses) {}
+  /* Retrieve result of RunManualExperiment */
+  rpc RunManualExperiment_Result(sila2.org.silastandard.CommandExecutionUUID) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.RunManualExperiment_Responses) {}
+  /* Run the existing fixed clog-clear operation through the dispenser server. */
+  rpc ClearClog (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.ClearClog_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.ClearClog_Responses) {}
+  /* Capture a camera preview through the camera server. */
+  rpc CaptureCameraPreview (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.CaptureCameraPreview_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.CaptureCameraPreview_Responses) {}
+  /* Capture and crop the existing repose preview. */
+  rpc CaptureReposePreview (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.CaptureReposePreview_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.CaptureReposePreview_Responses) {}
+  /* Cancel the current workflow and propagate StopAll to the first-layer dispenser. */
+  rpc AbortCurrentOperation (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.AbortCurrentOperation_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.AbortCurrentOperation_Responses) {}
+  /* Save the pending result with the existing result_store format. */
+  rpc SaveResults (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.SaveResults_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.SaveResults_Responses) {}
+  /* Discard the pending result with the existing result_store behavior. */
+  rpc DiscardResults (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.DiscardResults_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.DiscardResults_Responses) {}
+  /* Return the unchanged app_settings JSON structure. */
+  rpc GetSettings (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.GetSettings_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.GetSettings_Responses) {}
+  /* Validate and persist the unchanged app_settings JSON structure. */
+  rpc UpdateSettings (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.UpdateSettings_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.UpdateSettings_Responses) {}
+  /* Return the existing material database JSON. */
+  rpc GetMaterialDatabase (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.GetMaterialDatabase_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.GetMaterialDatabase_Responses) {}
+  /* Return a pending or saved run artifact through the second layer. */
+  rpc GetArtifact (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.GetArtifact_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.GetArtifact_Responses) {}
+  /* JSON snapshot containing state, stage, progress, elapsed time, logs, final result, and error. */
+  rpc Get_CurrentRun (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.Get_CurrentRun_Parameters) returns (sila2.com.sekisui.powdercharacterizer.powdercharacterizer.v1.Get_CurrentRun_Responses) {}
+}
+
+/* Parameters for RunAutomatedExperiment */
+message RunAutomatedExperiment_Parameters {
+}
+
+/* Responses of RunAutomatedExperiment */
+message RunAutomatedExperiment_Responses {
+  sila2.org.silastandard.String ResultJson = 1;  /* Final result and artifact metadata. */
+}
+
+/* Intermediate responses of RunAutomatedExperiment */
+message RunAutomatedExperiment_IntermediateResponses {
+  sila2.org.silastandard.String UpdateJson = 1;  /* Current execution snapshot. */
+}
+
+/* Parameters for RunCalibration */
+message RunCalibration_Parameters {
+}
+
+/* Responses of RunCalibration */
+message RunCalibration_Responses {
+  sila2.org.silastandard.String ResultJson = 1;  /* Final result and artifact metadata. */
+}
+
+/* Intermediate responses of RunCalibration */
+message RunCalibration_IntermediateResponses {
+  sila2.org.silastandard.String UpdateJson = 1;  /* Current execution snapshot. */
+}
+
+/* Parameters for RunBulkDensity */
+message RunBulkDensity_Parameters {
+}
+
+/* Responses of RunBulkDensity */
+message RunBulkDensity_Responses {
+  sila2.org.silastandard.String ResultJson = 1;  /* Final result and artifact metadata. */
+}
+
+/* Intermediate responses of RunBulkDensity */
+message RunBulkDensity_IntermediateResponses {
+  sila2.org.silastandard.String UpdateJson = 1;  /* Current execution snapshot. */
+}
+
+/* Parameters for RunTappedDensity */
+message RunTappedDensity_Parameters {
+}
+
+/* Responses of RunTappedDensity */
+message RunTappedDensity_Responses {
+  sila2.org.silastandard.String ResultJson = 1;  /* Final result and artifact metadata. */
+}
+
+/* Intermediate responses of RunTappedDensity */
+message RunTappedDensity_IntermediateResponses {
+  sila2.org.silastandard.String UpdateJson = 1;  /* Current execution snapshot. */
+}
+
+/* Parameters for RunAngleOfRepose */
+message RunAngleOfRepose_Parameters {
+}
+
+/* Responses of RunAngleOfRepose */
+message RunAngleOfRepose_Responses {
+  sila2.org.silastandard.String ResultJson = 1;  /* Final result and artifact metadata. */
+}
+
+/* Intermediate responses of RunAngleOfRepose */
+message RunAngleOfRepose_IntermediateResponses {
+  sila2.org.silastandard.String UpdateJson = 1;  /* Current execution snapshot. */
+}
+
+/* Parameters for RunSingleTest */
+message RunSingleTest_Parameters {
+  sila2.org.silastandard.String Stage = 1;  /* calibration, bulk_density, tapped_density, or angle_of_repose. */
+}
+
+/* Responses of RunSingleTest */
+message RunSingleTest_Responses {
+  sila2.org.silastandard.String ResultJson = 1;  /* Final result and artifact metadata. */
+}
+
+/* Intermediate responses of RunSingleTest */
+message RunSingleTest_IntermediateResponses {
+  sila2.org.silastandard.String UpdateJson = 1;  /* Current execution snapshot. */
+}
+
+/* Parameters for RunManualExperiment */
+message RunManualExperiment_Parameters {
+  sila2.org.silastandard.Integer VibrationLevel = 1;  /* Current manual vibration setting. */
+  sila2.org.silastandard.Real VibrationSeconds = 2;  /* Current manual duration. */
+  sila2.org.silastandard.Integer DoseCount = 3;  /* Requested chamber count. */
+  sila2.org.silastandard.Boolean UseAuger = 4;  /* Whether M3 runs with vibration. */
+}
+
+/* Responses of RunManualExperiment */
+message RunManualExperiment_Responses {
+  sila2.org.silastandard.String ResultJson = 1;  /* Manual operation result. */
+}
+
+/* Intermediate responses of RunManualExperiment */
+message RunManualExperiment_IntermediateResponses {
+  sila2.org.silastandard.String UpdateJson = 1;  /* Current execution snapshot. */
+}
+
+/* Parameters for ClearClog */
+message ClearClog_Parameters {
+}
+
+/* Responses of ClearClog */
+message ClearClog_Responses {
+  sila2.org.silastandard.String ResultJson = 1;  /* Clog-clear result. */
+}
+
+/* Parameters for CaptureCameraPreview */
+message CaptureCameraPreview_Parameters {
+  sila2.org.silastandard.String FocusMode = 1;  /* Current preview focus mode. */
+  sila2.org.silastandard.Real LensPosition = 2;  /* Current manual lens position. */
+}
+
+/* Responses of CaptureCameraPreview */
+message CaptureCameraPreview_Responses {
+  sila2.org.silastandard.Binary ImageData = 1;  /* Unchanged image bytes. */
+  sila2.org.silastandard.String MediaType = 2;  /* HTTP media type. */
+  sila2.org.silastandard.String Filename = 3;  /* Filename. */
+}
+
+/* Parameters for CaptureReposePreview */
+message CaptureReposePreview_Parameters {
+}
+
+/* Responses of CaptureReposePreview */
+message CaptureReposePreview_Responses {
+  sila2.org.silastandard.Binary ImageData = 1;  /* PNG bytes. */
+  sila2.org.silastandard.String MediaType = 2;  /* HTTP media type. */
+  sila2.org.silastandard.String Filename = 3;  /* Filename. */
+}
+
+/* Parameters for AbortCurrentOperation */
+message AbortCurrentOperation_Parameters {
+}
+
+/* Responses of AbortCurrentOperation */
+message AbortCurrentOperation_Responses {
+}
+
+/* Parameters for SaveResults */
+message SaveResults_Parameters {
+  sila2.org.silastandard.Boolean UpdateMaterialDatabase = 1;  /* Preserve the existing save-time choice to update Material DB. */
+}
+
+/* Responses of SaveResults */
+message SaveResults_Responses {
+}
+
+/* Parameters for DiscardResults */
+message DiscardResults_Parameters {
+}
+
+/* Responses of DiscardResults */
+message DiscardResults_Responses {
+}
+
+/* Parameters for GetSettings */
+message GetSettings_Parameters {
+}
+
+/* Responses of GetSettings */
+message GetSettings_Responses {
+  sila2.org.silastandard.String SettingsJson = 1;  /* Settings JSON. */
+}
+
+/* Parameters for UpdateSettings */
+message UpdateSettings_Parameters {
+  sila2.org.silastandard.String SettingsJson = 1;  /* Complete settings JSON. */
+}
+
+/* Responses of UpdateSettings */
+message UpdateSettings_Responses {
+}
+
+/* Parameters for GetMaterialDatabase */
+message GetMaterialDatabase_Parameters {
+}
+
+/* Responses of GetMaterialDatabase */
+message GetMaterialDatabase_Responses {
+  sila2.org.silastandard.String DatabaseJson = 1;  /* Material database JSON. */
+}
+
+/* Parameters for GetArtifact */
+message GetArtifact_Parameters {
+  sila2.org.silastandard.String RunId = 1;  /* Existing run identifier. */
+  sila2.org.silastandard.String Filename = 2;  /* Artifact filename. */
+}
+
+/* Responses of GetArtifact */
+message GetArtifact_Responses {
+  sila2.org.silastandard.Binary ArtifactData = 1;  /* Artifact bytes. */
+  sila2.org.silastandard.String MediaType = 2;  /* HTTP media type. */
+}
+
+/* Parameters for CurrentRun */
+message Get_CurrentRun_Parameters {
+}
+
+/* Responses of CurrentRun */
+message Get_CurrentRun_Responses {
+  sila2.org.silastandard.String CurrentRun = 1;  /* JSON snapshot containing state, stage, progress, elapsed time, logs, final result, and error. */
+}

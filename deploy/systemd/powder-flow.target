@@ -1,0 +1,7 @@
+[Unit]
+Description=Powder Characterizer two-layer SiLA2 stack
+Wants=powder-characterizer-dispenser.service powder-characterizer-camera.service powder-characterizer.service powder-flow-web.service
+After=network.target
+
+[Install]
+WantedBy=multi-user.target

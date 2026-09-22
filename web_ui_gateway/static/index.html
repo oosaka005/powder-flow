@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Powder Characterizer</title>
+  <style>
+    :root { --ink:#16211d; --muted:#64716b; --paper:#f4f1e9; --panel:#fffdf8; --line:#d8d4ca; --green:#176b52; --green2:#0e4e3d; --amber:#d7952f; --red:#b94040; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    header { min-height:72px; padding:14px 22px; display:flex; align-items:center; gap:18px; color:white; background:linear-gradient(110deg,#123e33,#1b7258); }
+    .brand { font-size:1.3rem; font-weight:750; letter-spacing:.02em; margin-right:auto; }
+    .connection { display:flex; align-items:center; gap:8px; font-size:.9rem; }
+    .dot { width:11px; height:11px; border-radius:50%; background:var(--amber); box-shadow:0 0 0 3px #ffffff22; }
+    .dot.ok { background:#77dda6; } .dot.bad { background:#ff8080; }
+    nav { display:flex; gap:6px; overflow:auto; padding:10px 16px; background:#e7e3da; border-bottom:1px solid var(--line); }
+    nav button { white-space:nowrap; color:#37443e; background:transparent; border:0; border-radius:8px; padding:10px 14px; font-weight:650; }
+    nav button.active { color:white; background:var(--green); }
+    main { max-width:1280px; margin:auto; padding:18px; }
+    section.page { display:none; } section.page.active { display:block; }
+    h1 { margin:0 0 4px; font-size:1.65rem; } h2 { margin:0 0 12px; font-size:1.05rem; }
+    .subtitle { color:var(--muted); margin:0 0 18px; }
+    .grid { display:grid; grid-template-columns:repeat(12,1fr); gap:14px; }
+    .card { grid-column:span 6; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; box-shadow:0 2px 8px #1e2a2410; }
+    .wide { grid-column:1/-1; } .third { grid-column:span 4; }
+    .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    label { color:#4f5b56; font-size:.88rem; font-weight:650; }
+    input,select,textarea { width:100%; min-height:44px; margin-top:5px; padding:9px 10px; border:1px solid #bfc6c1; border-radius:8px; color:var(--ink); background:white; font:inherit; }
+    textarea { min-height:110px; resize:vertical; }
+    input[type=checkbox] { width:22px; min-height:22px; margin:0; vertical-align:middle; }
+    .check { display:flex; align-items:center; gap:9px; min-height:44px; }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    button { min-height:44px; padding:9px 15px; border:1px solid transparent; border-radius:8px; font:inherit; font-weight:700; cursor:pointer; }
+    button.primary { color:white; background:var(--green); } button.primary:hover { background:var(--green2); }
+    button.secondary { color:var(--green2); background:#e3eee9; border-color:#bfd4ca; }
+    button.danger { color:white; background:var(--red); } button:disabled { opacity:.45; cursor:not-allowed; }
+    .metric { color:var(--muted); font-size:.82rem; text-transform:uppercase; letter-spacing:.06em; }
+    .metric strong { display:block; color:var(--ink); font-size:1.35rem; text-transform:none; letter-spacing:0; margin-top:3px; }
+    .status-line { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    progress { width:100%; height:16px; accent-color:var(--green); }
+    pre { margin:0; padding:12px; max-height:360px; overflow:auto; border-radius:8px; background:#17231f; color:#d8eee5; white-space:pre-wrap; font:13px/1.55 ui-monospace,monospace; }
+    .result-json { max-height:520px; }
+    .artifacts { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; }
+    figure { margin:0; padding:8px; border:1px solid var(--line); border-radius:9px; background:white; }
+    figure img { display:block; width:100%; aspect-ratio:4/3; object-fit:contain; background:#eee; }
+    figcaption { margin-top:6px; color:var(--muted); font-size:.82rem; overflow-wrap:anywhere; }
+    #preview-image { width:100%; max-height:430px; object-fit:contain; background:#eee; border-radius:8px; display:none; }
+    table { width:100%; border-collapse:collapse; font-size:.87rem; }
+    th,td { padding:9px; border-bottom:1px solid var(--line); text-align:left; white-space:nowrap; }
+    th { position:sticky; top:0; background:#ece9e1; }
+    .table-wrap { overflow:auto; max-height:600px; }
+    .toast { position:fixed; right:18px; bottom:18px; z-index:20; max-width:430px; padding:12px 16px; border-radius:9px; color:white; background:#25332d; box-shadow:0 5px 20px #0004; display:none; }
+    @media (max-width:800px) { .card,.third { grid-column:1/-1; } .form-grid { grid-template-columns:1fr; } main { padding:12px; } header { padding:12px 14px; } }
+  </style>
+</head>
+<body>
+  <header><div class="brand">Powder Characterizer</div><div class="connection"><span id="conn-dot" class="dot"></span><span id="conn-label">Connecting…</span></div></header>
+  <nav id="nav">
+    <button data-page="setup" class="active">Setup</button><button data-page="run">Run</button><button data-page="result">Result</button><button data-page="manual">Manual</button><button data-page="single">Single Test</button><button data-page="materials">Material DB</button>
+  </nav>
+  <main>
+    <section id="page-setup" class="page active">
+      <h1>Setup</h1><p class="subtitle">The existing application settings are edited without adding or renaming keys.</p>
+      <div class="grid">
+        <div class="card"><h2>Material</h2><div class="form-grid">
+          <label>Material name<input id="material_name"></label><label>Part type<select id="part_type"><option>metal</option><option>plastic</option></select></label><label>Disk ID<select id="disk_id"></select></label>
+        </div></div>
+        <div class="card"><h2>Calibration</h2><div class="form-grid">
+          <label>Vibration levels<input id="vib_levels" placeholder="1, 2, 3"></label><label>Time candidates (s)<input id="vib_times" placeholder="1.0, 2.0"></label><label>Steps per level<input id="steps_per_level" type="number" min="1"></label><label>Stability steps<input id="stability_steps" type="number" min="1"></label><label>Noise threshold (g)<input id="noise_threshold" type="number" min="0" step="0.001"></label>
+        </div></div>
+        <div class="card"><h2>Bulk Density</h2><div class="form-grid">
+          <label>Repeats<input id="bulk_repeats" type="number" min="1"></label><label>Weak vibration level<input id="bulk_weak" type="number" min="1" max="5"></label><label>Strong vibration level<input id="bulk_strong" type="number" min="1" max="5"></label><label>Default vibration (s)<input id="bulk_sec" type="number" min="0" step="0.1"></label>
+        </div></div>
+        <div class="card"><h2>Tapped Density</h2><div class="form-grid">
+          <label>Repeats<input id="tapped_repeats" type="number" min="1"></label><label>Vibration level<input id="tapped_level" type="number" min="1" max="5"></label><label>Vibration (s)<input id="tapped_sec" type="number" min="0" step="0.1"></label>
+        </div></div>
+        <div class="card wide"><div class="actions"><button class="primary" id="save-settings">Save Settings</button><button class="primary" id="save-start">Save & Start Automated Evaluation</button></div></div>
+      </div>
+    </section>
+
+    <section id="page-run" class="page">
+      <h1>Run</h1><p class="subtitle">The experiment continues in the Powder Characterizer Server if this browser disconnects.</p>
+      <div class="grid">
+        <div class="card third"><div class="metric">State<strong id="run-status">idle</strong></div></div><div class="card third"><div class="metric">Stage<strong id="run-stage">—</strong></div></div><div class="card third"><div class="metric">Elapsed<strong id="run-elapsed">0.0 s</strong></div></div>
+        <div class="card wide"><progress id="run-progress" value="0" max="1"></progress><div class="actions"><button class="primary" id="start-run">Start Automated Evaluation</button><button class="danger" id="abort-run">Abort</button><button class="secondary" id="retry-run">Run Again</button></div></div>
+        <div class="card wide"><h2>Live Log</h2><pre id="run-log">Waiting for a run.</pre></div>
+      </div>
+    </section>
+
+    <section id="page-result" class="page">
+      <h1>Result</h1><p class="subtitle">Pending results use the existing JSON, CSV, image, and Material DB writers.</p>
+      <div class="grid">
+        <div class="card wide"><div class="check"><input id="update-db" type="checkbox"><label for="update-db">Update Material DB on save</label></div><div class="actions"><button class="primary" id="save-result">Save Results</button><button class="danger" id="discard-result">Discard Results</button></div></div>
+        <div class="card wide"><h2>Artifacts</h2><div id="artifacts" class="artifacts">No artifacts.</div></div>
+        <div class="card wide"><h2>Result JSON</h2><pre id="result-json" class="result-json">No result.</pre></div>
+      </div>
+    </section>
+
+    <section id="page-manual" class="page">
+      <h1>Manual</h1><p class="subtitle">Manual actions still pass through the second-layer server.</p>
+      <div class="grid">
+        <div class="card"><h2>Manual Dispense</h2><div class="form-grid"><label>Vibration level<input id="manual_level" type="number" min="0" max="5"></label><label>Duration (s)<input id="manual_sec" type="number" min="0" step="0.1"></label><label>Dose count<input id="manual_count" type="number" min="0" max="99"></label><div class="check"><input id="manual_aug" type="checkbox"><label for="manual_aug">Use auger</label></div></div><div class="actions"><button class="primary" id="manual-run">Manual Dispense</button><button class="secondary" id="dispense-once">Dispense Once</button><button class="danger" id="clear-clog">Clear Clog</button></div></div>
+        <div class="card"><h2>Camera Preview</h2><div class="form-grid"><label>Focus mode<select id="focus_mode"><option value="auto">auto</option><option value="manual">manual</option></select></label><label>Lens position<input id="lens_position" type="number" step="0.1"></label></div><div class="actions"><button class="secondary" id="camera-preview">Camera Preview</button><button class="secondary" id="repose-preview">Repose Preview</button></div></div>
+        <div class="card wide"><img id="preview-image" alt="Camera preview"></div>
+      </div>
+    </section>
+
+    <section id="page-single" class="page">
+      <h1>Single Test</h1><p class="subtitle">Each stage uses the same application workflow and result format as the desktop app.</p>
+      <div class="grid"><div class="card wide"><div class="actions"><button class="primary single" data-stage="calibration">Calibration</button><button class="primary single" data-stage="bulk_density">Bulk Density</button><button class="primary single" data-stage="tapped_density">Tapped Density</button><button class="primary single" data-stage="angle_of_repose">Angle of Repose</button><button class="secondary" id="single-dispense">Dispense Once</button><button class="secondary" id="single-capture">Capture Image</button></div></div></div>
+    </section>
+
+    <section id="page-materials" class="page">
+      <h1>Material DB</h1><p class="subtitle">Existing keys and saved records are shown unchanged.</p><div class="card wide"><div class="actions"><button class="secondary" id="refresh-materials">Refresh</button></div><div class="table-wrap"><table id="materials-table"></table></div></div>
+    </section>
+  </main>
+  <div id="toast" class="toast"></div>
+  <script>
+    let settings = null, latestState = null, previewUrl = null;
+    const $ = id => document.getElementById(id);
+    const toast = (message, error=false) => { const el=$('toast'); el.textContent=message; el.style.background=error?'#9d3131':'#25332d'; el.style.display='block'; setTimeout(()=>el.style.display='none',4500); };
+    async function api(url, options={}) { const response=await fetch(url,{headers:{'Content-Type':'application/json',...(options.headers||{})},...options}); if(!response.ok){ let msg=response.statusText; try{msg=(await response.json()).detail||msg}catch{} throw new Error(msg); } const type=response.headers.get('content-type')||''; return type.includes('application/json')?response.json():response.blob(); }
+    function showPage(name){ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===name)); $('page-'+name).classList.add('active'); if(name==='materials') loadMaterials(); }
+    document.querySelectorAll('nav button').forEach(btn=>btn.onclick=()=>showPage(btn.dataset.page));
+    const nums = value => value.split(',').map(x=>Number(x.trim())).filter(x=>Number.isFinite(x));
+    function fillSettings(s){ settings=s; const m=s.material,c=s.calibration,b=s.bulk_density,t=s.tapped_density,n=s.manual; $('material_name').value=m.material_name; $('part_type').value=m.part_type; $('disk_id').innerHTML=Object.keys(s.disk_master).map(x=>`<option>${x}</option>`).join(''); $('disk_id').value=m.disk_id; $('vib_levels').value=c.vib_levels.join(', '); $('vib_times').value=c.vib_time_candidates.join(', '); $('steps_per_level').value=c.steps_per_level; $('stability_steps').value=c.stability_steps; $('noise_threshold').value=c.noise_threshold_g; $('bulk_repeats').value=b.repeats; $('bulk_weak').value=b.weak_vib_level; $('bulk_strong').value=b.strong_vib_level; $('bulk_sec').value=b.vib_sec_default; $('tapped_repeats').value=t.repeats; $('tapped_level').value=t.vib_level; $('tapped_sec').value=t.vib_sec; $('manual_level').value=n.manual_vibration_level; $('manual_sec').value=n.manual_vibration_sec; $('manual_count').value=n.manual_dose_count; $('manual_aug').checked=n.manual_use_aug; $('focus_mode').value=n.manual_camera_focus_mode; $('lens_position').value=n.manual_camera_lens_position; }
+    function collectSettings(){ const s=structuredClone(settings); Object.assign(s.material,{material_name:$('material_name').value,part_type:$('part_type').value,disk_id:$('disk_id').value}); Object.assign(s.calibration,{vib_levels:nums($('vib_levels').value),vib_time_candidates:nums($('vib_times').value),steps_per_level:Number($('steps_per_level').value),stability_steps:Number($('stability_steps').value),noise_threshold_g:Number($('noise_threshold').value)}); Object.assign(s.bulk_density,{repeats:Number($('bulk_repeats').value),weak_vib_level:Number($('bulk_weak').value),strong_vib_level:Number($('bulk_strong').value),vib_sec_default:Number($('bulk_sec').value)}); Object.assign(s.tapped_density,{repeats:Number($('tapped_repeats').value),vib_level:Number($('tapped_level').value),vib_sec:Number($('tapped_sec').value)}); Object.assign(s.manual,{manual_vibration_level:Number($('manual_level').value),manual_vibration_sec:Number($('manual_sec').value),manual_use_aug:$('manual_aug').checked,manual_dose_count:Number($('manual_count').value),manual_camera_focus_mode:$('focus_mode').value,manual_camera_lens_position:Number($('lens_position').value)}); return s; }
+    async function saveSettings(){ settings=collectSettings(); await api('/api/settings',{method:'PUT',body:JSON.stringify(settings)}); toast('Settings saved.'); }
+    async function startAutomated(){ await api('/api/runs/automated',{method:'POST'}); showPage('run'); toast('Automated evaluation started.'); }
+    async function retryAutomated(){ await api('/api/results/discard',{method:'POST'}); await startAutomated(); }
+    $('save-settings').onclick=()=>saveSettings().catch(e=>toast(e.message,true)); $('save-start').onclick=async()=>{try{await saveSettings();await startAutomated()}catch(e){toast(e.message,true)}}; $('start-run').onclick=()=>startAutomated().catch(e=>toast(e.message,true)); $('retry-run').onclick=()=>retryAutomated().catch(e=>toast(e.message,true)); $('abort-run').onclick=()=>api('/api/runs/abort',{method:'POST'}).then(()=>toast('Abort requested.')).catch(e=>toast(e.message,true));
+    function updateState(state){ latestState=state; $('run-status').textContent=state.status||'unknown'; $('run-stage').textContent=state.stage||'—'; $('run-elapsed').textContent=`${Number(state.elapsed_sec||0).toFixed(1)} s`; $('run-progress').value=state.progress||0; $('run-log').textContent=(state.logs||[]).join('\n')||'Waiting for a run.'; $('result-json').textContent=state.result?JSON.stringify(state.result,null,2):state.error||'No result.'; const running=state.status==='running',pending=Boolean(state.result_pending); $('start-run').disabled=running||pending; $('retry-run').disabled=running; $('abort-run').disabled=!running; $('save-result').disabled=!pending; $('discard-result').disabled=!pending; renderArtifacts(state); if(state.status==='completed'&&state.result) $('conn-label').textContent=pending?'Ready · result pending':'Ready'; }
+    function renderArtifacts(state){ const box=$('artifacts'); const arts=state.result?.artifacts||{}; const entries=Object.values(arts); if(!entries.length){box.textContent='No artifacts.';return;} box.innerHTML=entries.map(a=>`<figure><a href="/api/runs/${encodeURIComponent(state.run_id)}/artifacts/${encodeURIComponent(a.filename)}" target="_blank"><img src="/api/runs/${encodeURIComponent(state.run_id)}/artifacts/${encodeURIComponent(a.filename)}" alt="${a.filename}"></a><figcaption>${a.filename}</figcaption></figure>`).join(''); }
+    $('save-result').onclick=()=>api('/api/results/save',{method:'POST',body:JSON.stringify({update_material_database:$('update-db').checked})}).then(()=>toast('Result saved.')).catch(e=>toast(e.message,true)); $('discard-result').onclick=()=>api('/api/results/discard',{method:'POST'}).then(()=>toast('Result discarded.')).catch(e=>toast(e.message,true));
+    async function saveManualFields(){ settings=collectSettings(); await api('/api/settings',{method:'PUT',body:JSON.stringify(settings)}); }
+    async function manualRun(count=null){ await saveManualFields(); const payload={vibration_level:Number($('manual_level').value),vibration_seconds:Number($('manual_sec').value),dose_count:count??Number($('manual_count').value),use_auger:$('manual_aug').checked}; await api('/api/runs/manual',{method:'POST',body:JSON.stringify(payload)}); showPage('run'); }
+    $('manual-run').onclick=()=>manualRun().catch(e=>toast(e.message,true)); $('dispense-once').onclick=()=>manualRun(1).catch(e=>toast(e.message,true)); $('clear-clog').onclick=()=>api('/api/runs/clear-clog',{method:'POST'}).then(()=>toast('Clog-clear completed.')).catch(e=>toast(e.message,true));
+    async function preview(url,body){ const blob=await api(url,{method:'POST',body:body?JSON.stringify(body):undefined}); if(previewUrl)URL.revokeObjectURL(previewUrl); previewUrl=URL.createObjectURL(blob); $('preview-image').src=previewUrl; $('preview-image').style.display='block'; }
+    $('camera-preview').onclick=async()=>{try{await saveManualFields();await preview('/api/camera/preview',{focus_mode:$('focus_mode').value,lens_position:Number($('lens_position').value)})}catch(e){toast(e.message,true)}}; $('repose-preview').onclick=()=>preview('/api/camera/repose-preview').catch(e=>toast(e.message,true));
+    document.querySelectorAll('.single').forEach(btn=>btn.onclick=()=>api('/api/runs/single/'+btn.dataset.stage,{method:'POST'}).then(()=>showPage('run')).catch(e=>toast(e.message,true)));
+    $('single-dispense').onclick=()=>manualRun(1).catch(e=>toast(e.message,true)); $('single-capture').onclick=()=>preview('/api/camera/repose-preview').then(()=>showPage('manual')).catch(e=>toast(e.message,true));
+    async function loadMaterials(){ try{const rows=await api('/api/materials'); const keys=[...new Set(rows.flatMap(Object.keys))]; $('materials-table').innerHTML=`<thead><tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${keys.map(k=>`<td>${r[k]??''}</td>`).join('')}</tr>`).join('')}</tbody>`;}catch(e){toast(e.message,true)} }
+    $('refresh-materials').onclick=loadMaterials;
+    function connectWebSocket(){ const ws=new WebSocket(`${location.protocol==='https:'?'wss':'ws'}://${location.host}/ws/run`); ws.onopen=()=>{$('conn-dot').className='dot ok';$('conn-label').textContent='Connected'}; ws.onmessage=e=>updateState(JSON.parse(e.data)); ws.onclose=()=>{$('conn-dot').className='dot bad';$('conn-label').textContent='Reconnecting…';setTimeout(connectWebSocket,1500)}; ws.onerror=()=>ws.close(); }
+    Promise.all([api('/api/settings'),api('/api/runs/current')]).then(([s,state])=>{fillSettings(s);updateState(state);connectWebSocket()}).catch(e=>{toast(e.message,true);$('conn-dot').className='dot bad';$('conn-label').textContent='Server unavailable';setTimeout(()=>location.reload(),3000)});
+  </script>
+</body>
+</html>

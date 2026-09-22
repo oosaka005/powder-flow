@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Feature SiLA2Version="1.0" FeatureVersion="1.0"
+  Originator="com.sekisui" Category="powdercharacterizer"
+  xmlns="http://www.sila-standard.org"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.sila-standard.org https://gitlab.com/SiLA2/sila_base/raw/master/schema/FeatureDefinition.xsd">
+  <Identifier>PowderCharacterizerDispenser</Identifier>
+  <DisplayName>Powder Characterizer Dispenser</DisplayName>
+  <Description>Physical control of the Powder Characterizer dispenser. This feature exposes only the motor operations used by powder-flow.</Description>
+
+  <Property>
+    <Identifier>Status</Identifier>
+    <DisplayName>Status</DisplayName>
+    <Description>Device state: starting, discovering, waiting_for_device, ready, busy, recovering, or fault.</Description>
+    <Observable>No</Observable>
+    <DataType><Basic>String</Basic></DataType>
+  </Property>
+
+  <DataTypeDefinition>
+    <Identifier>StepResult</Identifier>
+    <DisplayName>Step Result</DisplayName>
+    <Description>Result of one indexed chamber movement.</Description>
+    <DataType>
+      <Structure>
+        <Element>
+          <Identifier>Success</Identifier><DisplayName>Success</DisplayName>
+          <Description>Whether the IR transition completed before timeout.</Description>
+          <DataType><Basic>Boolean</Basic></DataType>
+        </Element>
+        <Element>
+          <Identifier>StopReason</Identifier><DisplayName>Stop Reason</DisplayName>
+          <Description>sensor or timeout.</Description>
+          <DataType><Basic>String</Basic></DataType>
+        </Element>
+        <Element>
+          <Identifier>ElapsedSec</Identifier><DisplayName>Elapsed Seconds</DisplayName>
+          <Description>Measured step duration.</Description>
+          <DataType><Basic>Real</Basic></DataType>
+        </Element>
+      </Structure>
+    </DataType>
+  </DataTypeDefinition>
+
+  <Command>
+    <Identifier>IndexChamber</Identifier><DisplayName>Index Chamber</DisplayName>
+    <Description>Advance exactly one chamber using the IR sensor and existing timeout behavior.</Description>
+    <Observable>No</Observable>
+    <Parameter><Identifier>Pwm</Identifier><DisplayName>PWM</DisplayName><Description>Rotation PWM from 0 through 255.</Description><DataType><Basic>Integer</Basic></DataType></Parameter>
+    <Parameter><Identifier>MaxSeconds</Identifier><DisplayName>Maximum Seconds</DisplayName><Description>Existing index safety timeout.</Description><DataType><Basic>Real</Basic></DataType></Parameter>
+    <Parameter><Identifier>Reverse</Identifier><DisplayName>Reverse</DisplayName><Description>Reverse the rotation direction.</Description><DataType><Basic>Boolean</Basic></DataType></Parameter>
+    <Response><Identifier>Result</Identifier><DisplayName>Result</DisplayName><Description>Index result.</Description><DataType><DataTypeIdentifier>StepResult</DataTypeIdentifier></DataType></Response>
+    <DefinedExecutionErrors>
+      <Identifier>DeviceNotConnected</Identifier>
+      <Identifier>AmbiguousDevice</Identifier>
+      <Identifier>OperationCancelled</Identifier>
+      <Identifier>DeviceFault</Identifier>
+    </DefinedExecutionErrors>
+  </Command>
+
+  <Command>
+    <Identifier>Vibrate</Identifier><DisplayName>Vibrate</DisplayName>
+    <Description>Run M2 at the existing vibration level mapping for the requested duration.</Description>
+    <Observable>No</Observable>
+    <Parameter><Identifier>Level</Identifier><DisplayName>Level</DisplayName><Description>Vibration level.</Description><DataType><Basic>Integer</Basic></DataType></Parameter>
+    <Parameter><Identifier>DurationSec</Identifier><DisplayName>Duration Seconds</DisplayName><Description>Run duration.</Description><DataType><Basic>Real</Basic></DataType></Parameter>
+    <DefinedExecutionErrors>
+      <Identifier>DeviceNotConnected</Identifier>
+      <Identifier>AmbiguousDevice</Identifier>
+      <Identifier>OperationCancelled</Identifier>
+      <Identifier>DeviceFault</Identifier>
+    </DefinedExecutionErrors>
+  </Command>
+
+  <Command>
+    <Identifier>VibrateWithAuger</Identifier><DisplayName>Vibrate With Auger</DisplayName>
+    <Description>Run M2 and M3 together, preserving powder-flow's current forward auger direction.</Description>
+    <Observable>No</Observable>
+    <Parameter><Identifier>Level</Identifier><DisplayName>Level</DisplayName><Description>Vibration level.</Description><DataType><Basic>Integer</Basic></DataType></Parameter>
+    <Parameter><Identifier>DurationSec</Identifier><DisplayName>Duration Seconds</DisplayName><Description>Run duration.</Description><DataType><Basic>Real</Basic></DataType></Parameter>
+    <DefinedExecutionErrors>
+      <Identifier>DeviceNotConnected</Identifier>
+      <Identifier>AmbiguousDevice</Identifier>
+      <Identifier>OperationCancelled</Identifier>
+      <Identifier>DeviceFault</Identifier>
+    </DefinedExecutionErrors>
+  </Command>
+
+  <Command>
+    <Identifier>RunAllMotors</Identifier><DisplayName>Run All Motors</DisplayName>
+    <Description>Run M1, M2, and M3 together for the requested duration and then perform one index step.</Description>
+    <Observable>No</Observable>
+    <Parameter><Identifier>Level</Identifier><DisplayName>Level</DisplayName><Description>Vibration level.</Description><DataType><Basic>Integer</Basic></DataType></Parameter>
+    <Parameter><Identifier>DurationSec</Identifier><DisplayName>Duration Seconds</DisplayName><Description>Run duration.</Description><DataType><Basic>Real</Basic></DataType></Parameter>
+    <Response><Identifier>Result</Identifier><DisplayName>Result</DisplayName><Description>Index result after the motor run.</Description><DataType><DataTypeIdentifier>StepResult</DataTypeIdentifier></DataType></Response>
+    <DefinedExecutionErrors>
+      <Identifier>DeviceNotConnected</Identifier>
+      <Identifier>AmbiguousDevice</Identifier>
+      <Identifier>OperationCancelled</Identifier>
+      <Identifier>DeviceFault</Identifier>
+    </DefinedExecutionErrors>
+  </Command>
+
+  <Command>
+    <Identifier>StopAll</Identifier><DisplayName>Stop All</DisplayName>
+    <Description>Request immediate cancellation and stop every motor.</Description>
+    <Observable>No</Observable>
+  </Command>
+
+  <Command>
+    <Identifier>Close</Identifier><DisplayName>Close</DisplayName>
+    <Description>Stop all motors and release hardware resources. Intended for server shutdown and maintenance.</Description>
+    <Observable>No</Observable>
+  </Command>
+
+  <DefinedExecutionError>
+    <Identifier>DeviceNotConnected</Identifier>
+    <DisplayName>Device Not Connected</DisplayName>
+    <Description>No individual I2C device is currently available, or the I2C bus cannot be accessed.</Description>
+  </DefinedExecutionError>
+
+  <DefinedExecutionError>
+    <Identifier>AmbiguousDevice</Identifier>
+    <DisplayName>Ambiguous Device</DisplayName>
+    <Description>More than one individual I2C device was detected, so selecting a dispenser automatically would be unsafe.</Description>
+  </DefinedExecutionError>
+
+  <DefinedExecutionError>
+    <Identifier>OperationCancelled</Identifier>
+    <DisplayName>Operation Cancelled</DisplayName>
+    <Description>The dispenser operation was cancelled by Stop All.</Description>
+  </DefinedExecutionError>
+
+  <DefinedExecutionError>
+    <Identifier>DeviceFault</Identifier>
+    <DisplayName>Device Fault</DisplayName>
+    <Description>The dispenser reported a hardware or positioning fault while executing the operation.</Description>
+  </DefinedExecutionError>
+</Feature>
