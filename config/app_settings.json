@@ -28,12 +28,12 @@
     "vib_sec": 3.0
   },
   "manual": {
-    "manual_vibration_level": 1,
-    "manual_vibration_sec": 1.0,
+    "manual_vibration_level": 4,
+    "manual_vibration_sec": 2.0,
     "manual_use_aug": true,
-    "manual_dose_count": 1,
-    "manual_camera_focus_mode": "auto",
-    "manual_camera_lens_position": 10.0
+    "manual_dose_count": 4,
+    "manual_camera_focus_mode": "manual",
+    "manual_camera_lens_position": 14.3
   },
   "paths": {
     "log_root": "logs/experiments"
