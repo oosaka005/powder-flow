@@ -2,9 +2,11 @@
 
 1. Use the existing repository at `/home/sdl-5/powder-flow` and its `.venv`.
    After pulling an update, install `requirements.txt` into that environment.
-2. Keep the existing Balance Server deployment and set its endpoint in
-   `/etc/powder-flow.env`. Do not launch the formulation-cell powder dispenser
-   server for the same Motor Bonnet.
+2. Keep the existing Balance Server repository at
+   `/home/sdl-5/balance_sila_server`. The included `balance-sila-server.service`
+   starts that existing server on `127.0.0.1:50052`; no replacement Balance
+   Server is created. Do not launch the formulation-cell powder dispenser server
+   for the same Motor Bonnet.
 3. Copy `powder-flow.env.example` to `/etc/powder-flow.env` and adjust hosts or
    ports if required. Do not put I2C addresses in this file.
 4. Copy the units in `systemd/` to `/etc/systemd/system/`, then enable

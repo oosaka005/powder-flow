@@ -1,0 +1,14 @@
+[Unit]
+Description=Existing Balance SiLA2 Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sdl-5/balance_sila_server
+ExecStart=/home/sdl-5/balance_sila_server/.venv/bin/python -m balance_server --ip-address 127.0.0.1 --port 50052 --insecure
+Restart=on-failure
+RestartSec=2
+User=sdl-5
+
+[Install]
+WantedBy=powder-flow.target

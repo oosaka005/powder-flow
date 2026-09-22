@@ -1,7 +1,7 @@
 [Unit]
 Description=Powder Characterizer SiLA2 Process Server
-After=network.target powder-characterizer-dispenser.service powder-characterizer-camera.service
-Wants=powder-characterizer-dispenser.service powder-characterizer-camera.service
+After=network.target balance-sila-server.service powder-characterizer-dispenser.service powder-characterizer-camera.service
+Wants=balance-sila-server.service powder-characterizer-dispenser.service powder-characterizer-camera.service
 
 [Service]
 Type=simple
